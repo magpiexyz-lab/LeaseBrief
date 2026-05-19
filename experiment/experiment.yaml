@@ -9,124 +9,363 @@
 # When you're done (either way), run: make validate → /bootstrap
 
 # --- 1. Identity ---
-name: my-experiment          # Lowercase slug, hyphens only (e.g., "quick-bill"). Used in analytics.
-# type: web-app               # Product archetype (default: web-app). See .claude/archetypes/
-# level: 2                    # Experiment scope: 1 (Pitch), 2 (Prototype), 3 (Product).
-                               # /spec sets this automatically. Manual: omit to let /bootstrap infer from stack.
+name: leasebrief             # Lowercase slug, hyphens only. Used in analytics.
+owner: magpiexyz-lab         # Project owner. Used as project_owner in analytics.
+type: web-app                # Product archetype. See .claude/archetypes/
+level: 3                     # Experiment scope: 3 (Product/Full MVP).
 status: draft
+quality: production          # TDD, per-task implementer, spec review (Level 3 default).
 # quality: production is always active (TDD, per-task implementer, spec review).
                                # This field is reserved for future use. Do not set quality: mvp.
 
 # --- 2. Intent ---
 description: |
-  TODO: Describe the problem and your proposed solution in 2-3 sentences.
-  Who has this problem? What does the user get that they don't have today?
+  Mid-market commercial real estate brokers spend 4-8 hours of in-house time at
+  $75-150/hr — or pay $200-500 per document to outsourced services like Datapoint
+  and Lease Probe — to abstract each commercial lease into structured fields.
+  Enterprise software (MRI Contract Intelligence/Leverton, Visual Lease,
+  Leasecake) starts at $1-5k/month and is built for portfolio admin, not the
+  broker workflow. LeaseBrief is a drag-and-drop AI tool that turns any
+  commercial lease PDF into a structured 30-field abstract in 90 seconds, with
+  confidence scoring that routes low-confidence fields to a review queue, and
+  one-click export to Yardi, MRI, and AppFolio Commercial formats.
 
-thesis: "TODO: If [action], then [outcome], as measured by [metric]"
-target_user: "TODO: Be specific (e.g., freelance designers billing <5 clients/month)"
+thesis: "If a broker can drop a lease PDF and receive a 30-field structured abstract with confidence scoring in under 90 seconds, then >=10% of activated users will start a paid checkout within their first session, as measured by Stripe checkout_started events."
+target_user: "Commercial real estate brokers and lease administrators at mid-market firms (10-50 agents) handling 10-30 lease abstractions per month, currently outsourcing to Datapoint/Lease Probe at $200-500/lease or absorbing 4-8 hrs/lease in-house."
 
 distribution: |
-  TODO: How will you get this in front of target users?
-  e.g., Post in r/freelance, Indie Hackers, LinkedIn outreach
+  Phase 1: Post in r/CommercialRealEstate and BiggerPockets commercial forums.
+  Phase 2: LinkedIn Ads targeting "Commercial Real Estate Broker", "Lease
+  Administrator", and CCIM/SIOR designation holders at firms with 10-50 agents.
+  Phase 3: Outreach to CCIM Institute member newsletter and NAI Global / Lee &
+  Associates regional offices.
 
-# hypotheses:
-#   - id: h-01
-#     category: demand          # demand | reach | feasibility | monetize | retain
-#     statement: "TODO: Testable prediction with specific numbers"
-#     success_metric: "TODO: What to measure"
-#     threshold: "TODO: Pass/fail number (e.g., > 5% CTR)"
-#     priority_score: 90        # 0-100, higher = test first
-#     experiment_level: 1       # Minimum level needed to test this
-#     depends_on: []
-#     status: pending           # pending | resolved
+hypotheses:
+  - id: h-01
+    category: demand
+    statement: ">=6% of landing visitors click the primary 'Abstract a Lease Free' CTA (B2B niche-pain landing benchmark: 3-7%)."
+    metric:
+      formula: "cta_click / landing_view"
+      threshold: 0.06
+      operator: gte
+    priority_score: 90
+    experiment_level: 1
+    depends_on: []
+    status: pending
+  - id: h-02
+    category: activate
+    statement: ">=75% of fields the AI extracts on a real commercial lease return as high-confidence (no review-queue flag) — i.e., the AI can actually do the job on real CRE leases."
+    metric:
+      formula: "field_high_confidence / field_extracted"
+      threshold: 0.75
+      operator: gte
+    priority_score: 88
+    experiment_level: 3
+    depends_on: []
+    status: pending
+  - id: h-03
+    category: activate
+    statement: ">=50% of signups complete at least one full lease abstract (PDF uploaded, all 30 fields rendered) within their first session."
+    metric:
+      formula: "abstract_completed / signup_complete"
+      threshold: 0.50
+      operator: gte
+    priority_score: 85
+    experiment_level: 3
+    depends_on: [h-01, h-02]
+    status: pending
+  - id: h-04
+    category: monetize
+    statement: ">=10% of users who complete a first abstract start a paid checkout, motivated by a clear $399/mo (50 abstracts) anchor against $200-500/lease outsourced cost."
+    metric:
+      formula: "checkout_started / abstract_completed"
+      threshold: 0.10
+      operator: gte
+    priority_score: 82
+    experiment_level: 3
+    depends_on: [h-03]
+    status: pending
+  - id: h-05
+    category: reach
+    statement: ">=35% of landing visits come from a qualified CRE channel (LinkedIn job-title-targeted, r/CommercialRealEstate referrer, or CCIM newsletter UTM) — i.e., we can reliably reach the ICP."
+    metric:
+      formula: "qualified_paid_visit / landing_view"
+      threshold: 0.35
+      operator: gte
+    priority_score: 75
+    experiment_level: 3
+    depends_on: []
+    status: pending
+  - id: h-06
+    category: retain
+    statement: ">=30% of users who complete a first abstract return within 7 days to upload another lease (B2B niche-tool 7-day return benchmark: 25-40%)."
+    metric:
+      formula: "retain_return / abstract_completed"
+      threshold: 0.30
+      operator: gte
+    priority_score: 70
+    experiment_level: 3
+    depends_on: [h-03]
+    status: pending
+  - id: h-07
+    category: demand
+    statement: "Mid-market CRE lease abstraction is an active, growing market (not theoretical or shrinking)."
+    evidence:
+      source: "Pre-flight research, 2026-05-19"
+      verdict: "PASS — outsourced services $200-500/lease (Datapoint, Lease Probe), mid-market SaaS $1-5k/mo (GrowthFactor, Re-Leased, Leasecake), enterprise $5k+/mo (MRI Contract Intelligence/Leverton, Visual Lease, Prophia); ASC 842/IFRS 16 compliance is expanding the market."
+      citation: ".runs/spec-research.json (dimension: market_exists)"
+    priority_score: 60
+    experiment_level: 3
+    depends_on: []
+    status: resolved
+  - id: h-08
+    category: demand
+    statement: "The pain (4-8 hrs/lease at $75-150/hr OR $200-500 outsourced per lease) is real, specific, and currently happening."
+    evidence:
+      source: "Pre-flight research, 2026-05-19"
+      verdict: "PASS — industry sources confirm baseline 4-6 hrs/lease manually; AI tools reduce to ~15 min with 90-97% accuracy; multiple competitor product reviews cite the pain."
+      citation: ".runs/spec-research.json (dimension: problem_validated)"
+    priority_score: 60
+    experiment_level: 3
+    depends_on: []
+    status: resolved
+  - id: h-09
+    category: reach
+    statement: "Defensible wedge exists against incumbent competition (AI-native + $399 flat + drop-PDF workflow vs. lease-admin platforms with AI added)."
+    evidence:
+      source: "Pre-flight research, 2026-05-19"
+      verdict: "CAUTION — original framing ('no software-only option') was overstated; GrowthFactor Starter ($200/mo) and Re-Leased ($100-200/property/mo) already exist. Wedge is real (price + AI-native + broker workflow) but differentiation must land in 5 seconds on the landing page."
+      citation: ".runs/spec-research.json (dimension: competitive_landscape)"
+    priority_score: 50
+    experiment_level: 3
+    depends_on: []
+    status: resolved
+  - id: h-10
+    category: reach
+    statement: "ICP (mid-market CRE brokers 10-50 agents, 10-30 leases/month) is describable and reachable via planned channels."
+    evidence:
+      source: "Pre-flight research, 2026-05-19"
+      verdict: "PASS — reachable via r/CommercialRealEstate, BiggerPockets commercial forums, LinkedIn job-title targeting (CRE Broker, Lease Administrator, CCIM/SIOR holders), CCIM Institute newsletter."
+      citation: ".runs/spec-research.json (dimension: icp_identified)"
+    priority_score: 60
+    experiment_level: 3
+    depends_on: []
+    status: resolved
 
 # --- 3. Behaviors ---
-# Given/when/then specifications derived from hypotheses.
-# Each behavior IS a feature requirement — they replace the features list.
-# behaviors:
-#   - id: b-01
-#     hypothesis_id: h-01
-#     given: "TODO: Initial condition"
-#     when: "TODO: User action or trigger"
-#     then: "TODO: Observable, measurable outcome"
-#     tests:
-#       - "TODO: Verification assertion"
-#     level: 1
-#   # System behavior example:
-#   - id: b-05
-#     actor: system             # system | cron (default: user)
-#     trigger: "TODO: What starts this (e.g., stripe webhook checkout.session.completed)"
-#     hypothesis_id: h-03
-#     given: "TODO: Initial condition"
-#     when: "TODO: System event"
-#     then: "TODO: Observable outcome"
-#     tests:
-#       - "TODO: Verification assertion"
-#     level: 3
+# Each behavior IS a feature requirement — observable test of a pending hypothesis.
+behaviors:
+  - id: b-01
+    hypothesis_id: h-01
+    pages: [landing]
+    given: "A CRE broker lands on the LeaseBrief landing page from a qualified channel"
+    when: "They read the headline + value prop and click the primary 'Abstract a Lease Free' CTA"
+    then: "cta_click event fires with variant slug; user is routed to signup"
+    tests:
+      - "Landing renders headline, sub-headline, and a visible primary CTA"
+      - "Clicking the primary CTA fires cta_click event and navigates to /signup"
+      - "landing_view event fires on page load with UTM/referrer attribution"
+    level: 3
+  - id: b-02
+    hypothesis_id: h-01
+    pages: [signup, dashboard]
+    given: "A visitor clicks the landing CTA"
+    when: "They submit email + password (or use Google OAuth)"
+    then: "signup_start fires on form mount; account is created via Supabase auth; signup_complete fires once; user lands on dashboard"
+    tests:
+      - "Signup form validates email format and password length"
+      - "Successful signup creates a row in the users table and a Supabase session"
+      - "signup_start fires on /signup page mount; signup_complete fires once after successful auth"
+      - "User is redirected to /dashboard after signup"
+    level: 3
+  - id: b-03
+    hypothesis_id: h-02
+    pages: [abstract-new, dashboard]
+    given: "A signed-in user is on the dashboard"
+    when: "They drag-and-drop a commercial lease PDF (or click to select)"
+    then: "PDF is uploaded to storage, an extraction job is started, user sees a progress state with target <90s completion"
+    tests:
+      - "Dashboard renders a drag-and-drop upload zone"
+      - "Uploading a PDF creates an abstracts row with status='processing'"
+      - "abstract_started event fires with abstract_id and file size"
+      - "Upload rejects non-PDF files with a clear error message"
+    level: 3
+  - id: b-04
+    actor: system
+    trigger: "POST /api/abstract — AI extraction job for an uploaded PDF"
+    hypothesis_id: h-02
+    given: "An abstract row exists with status='processing' and a stored PDF"
+    when: "The server runs the AI extraction (LLM with vision/OCR on lease PDF text)"
+    then: "30 fields are written to abstract_fields with per-field confidence scores; field_extracted fires per field; field_high_confidence fires for fields where confidence >= 0.85; abstract status updates to 'ready'"
+    tests:
+      - "abstract_fields table has 30 rows per abstract (rent, escalations, options, NNN, CAM, ...) with confidence in [0,1]"
+      - "Per-field confidence is persisted and exposed through the read API"
+      - "field_extracted event fires once per extracted field"
+      - "field_high_confidence event fires only when confidence >= 0.85"
+      - "extraction_duration_ms is recorded on the abstract row"
+    level: 3
+  - id: b-05
+    hypothesis_id: h-03
+    pages: [abstract-detail]
+    given: "An extraction job has completed for an abstract"
+    when: "The user opens the abstract detail page"
+    then: "All 30 fields render in a structured layout; low-confidence fields (<0.85) are visually flagged and listed in an inline review queue; an 'Approve Abstract' CTA is visible"
+    tests:
+      - "Abstract detail page shows all 30 fields grouped by category (rent, term, options, NNN/CAM, etc.)"
+      - "Low-confidence fields render with a distinct visual indicator and source-page reference where available"
+      - "abstract_view event fires on page load"
+      - "Clicking 'Approve Abstract' fires abstract_completed event and updates status to 'approved'"
+    level: 3
+  - id: b-06
+    hypothesis_id: h-03
+    pages: [abstract-detail, review-queue]
+    given: "An abstract has one or more low-confidence fields flagged"
+    when: "The user opens the review queue and edits a flagged field"
+    then: "Edited field is persisted with reviewer_edited=true; field is removed from the review queue; review_field_edited event fires"
+    tests:
+      - "Review queue lists every field where confidence < 0.85"
+      - "Editing a field saves to abstract_fields and sets reviewer_edited=true"
+      - "review_field_edited event fires per edit with field name and original confidence"
+      - "Review queue empties as fields are resolved"
+    level: 3
+  - id: b-07
+    hypothesis_id: h-04
+    pages: [pricing, checkout, dashboard]
+    given: "A user has completed at least one abstract and is on the dashboard or pricing page"
+    when: "They click 'Upgrade to Pro' ($399/mo, 50 abstracts + $5/overage)"
+    then: "A Stripe Checkout session is created server-side; user is redirected; checkout_started event fires"
+    tests:
+      - "Pricing page renders $399/mo + $5/overage anchor against the $200-500/lease outsourced baseline"
+      - "Upgrade CTA is visible on dashboard for users still on the free tier"
+      - "Clicking Upgrade calls /api/checkout, returns a Stripe session URL, redirects the user"
+      - "checkout_started event fires with abstract_count_at_upgrade property"
+    level: 3
+  - id: b-08
+    hypothesis_id: h-04
+    pages: [abstract-detail, export]
+    given: "A user has an approved abstract with all fields finalized"
+    when: "They click 'Export' and select a target format (Yardi, MRI, or AppFolio Commercial)"
+    then: "A correctly-formatted CSV is generated and downloaded; abstract_exported event fires with target format"
+    tests:
+      - "Export menu offers Yardi, MRI Software, and AppFolio Commercial format options"
+      - "Generated CSV column headers match the target system's import spec"
+      - "Free tier limits to 3 exports/abstract or watermarks; paid tier unlimited"
+      - "abstract_exported event fires with format property (yardi | mri | appfolio)"
+    level: 3
+  - id: b-09
+    actor: system
+    trigger: "stripe webhook checkout.session.completed"
+    hypothesis_id: h-04
+    given: "A Stripe checkout session completes successfully"
+    when: "Stripe sends the checkout.session.completed webhook"
+    then: "User row is updated to plan='pro' with quota_monthly=50 and current_period_end set; checkout_completed (server-side) event fires; welcome email queued"
+    tests:
+      - "Webhook signature is verified against STRIPE_WEBHOOK_SECRET"
+      - "users.plan = 'pro' and users.stripe_customer_id is persisted"
+      - "trackServerEvent('checkout_completed', user.id, { plan: 'pro' }) is called"
+      - "Welcome/onboarding email is queued via resend (or stub if email stack absent)"
+    level: 3
+  - id: b-10
+    hypothesis_id: h-05
+    pages: [landing]
+    given: "A landing visit arrives with UTM parameters or HTTP referrer"
+    when: "The page mounts and analytics initializes"
+    then: "Source classification runs against the qualified-channel allowlist (LinkedIn job-title campaign IDs, reddit.com/r/CommercialRealEstate, ccim.com, biggerpockets.com); qualified_paid_visit fires if matched; otherwise landing_view fires alone"
+    tests:
+      - "UTM source/medium/campaign and document.referrer are captured into analytics properties"
+      - "qualified_paid_visit event fires for matching channels; not for direct/organic traffic"
+      - "Source classification logic lives in src/lib/analytics-attribution.ts (or framework equivalent)"
+    level: 3
+  - id: b-11
+    hypothesis_id: h-06
+    pages: [dashboard, abstract-new]
+    given: "A user has previously completed at least one abstract"
+    when: "They return to the app between 1 and 7 days after their first abstract_completed event and upload a new PDF"
+    then: "retain_return event fires (via the framework RetainTracker) with days_since_first property; second abstract is created and proceeds through extraction"
+    tests:
+      - "Daily session containing a new abstract upload >= 1 day after first abstract triggers retain_return"
+      - "retain_return fires only once per user per return-window (idempotent)"
+      - "Dashboard shows abstract history with date and status for repeat users"
+    level: 3
 
 # --- 4. Journey ---
 # The user journey from landing to value delivery.
 # Drives ux-journeyer, funnel tests, and plan reviews.
 golden_path:
-  - step: "TODO: What happens first (e.g., Visit landing page)"
-    event: visit_landing
+  - step: "Land on LeaseBrief with a clear value prop (90-sec lease abstract for $0)"
+    event: landing_view
     page: landing
-  - step: "TODO: What action delivers value?"
-    event: activate
-    page: TODO
-target_clicks: 3
+  - step: "Click 'Abstract a Lease Free' primary CTA"
+    event: cta_click
+    page: landing
+  - step: "Create an account (email/password or Google)"
+    event: signup_complete
+    page: signup
+  - step: "Drag-and-drop a commercial lease PDF onto the dashboard"
+    event: abstract_started
+    page: dashboard
+  - step: "Review the AI-extracted 30 fields with confidence scoring and approve the abstract"
+    event: abstract_completed
+    page: abstract-detail
+target_clicks: 4
 
-# --- 5. Variants (optional) ---
-# Test different messaging for the same product. Each variant gets its own
-# landing page URL (/v/<slug>) and its own ad group in the distribution channel.
-# Omit this section for a single-variant experiment (the default).
-# variants:
-#   - slug: TODO
-#     headline: "TODO: Value proposition variant A"
-#     subheadline: "TODO: How it works, variant A"
-#     cta: "TODO: Action verb + outcome"
-#     promise: "TODO: Core benefit in one phrase"         # generated by /spec
-#     proof: "TODO: Evidence or credibility signal"       # generated by /spec
-#     urgency: "TODO: Why act now"                        # generated by /spec
-#     pain_points:
-#       - "TODO: Pain point 1"
-#       - "TODO: Pain point 2"
-#       - "TODO: Pain point 3"
-#   - slug: TODO
-#     headline: "TODO: Value proposition variant B"
-#     subheadline: "TODO: How it works, variant B"
-#     cta: "TODO: Action verb + outcome"
-#     promise: "TODO: Core benefit in one phrase"         # generated by /spec
-#     proof: "TODO: Evidence or credibility signal"       # generated by /spec
-#     urgency: "TODO: Why act now"                        # generated by /spec
-#     pain_points:
-#       - "TODO: Pain point 1"
-#       - "TODO: Pain point 2"
-#       - "TODO: Pain point 3"
+# --- 5. Variants ---
+# Each variant gets its own landing URL (/v/<slug>) and its own ad group.
+variants:
+  - slug: speed
+    headline: "Lease Abstracts in 90 Seconds, Not 8 Hours"
+    subheadline: "Drop a commercial lease PDF, get 30 structured fields back with confidence scoring, and export to Yardi, MRI, or AppFolio in one click."
+    cta: "Abstract a Lease Free"
+    pain_points:
+      - "Each in-house lease abstract still burns 4-8 hours of broker or analyst time"
+      - "Datapoint and Lease Probe take 24-72 hours to turn around a single abstract"
+      - "Half a workday spent on one lease is half a workday not spent closing the next deal"
+    promise: "Get your afternoon back — every lease becomes a 90-second job."
+    proof: "The same 30-field abstract Datapoint charges $200-500 per document for, returned by AI in 90 seconds with per-field confidence."
+    urgency: "Every lease you're still abstracting by hand is a deal you're closing slower."
+    pricing_amount: 399
+    pricing_model: subscription
+  - slug: cost
+    headline: "Stop Paying $300 Per Lease to Outsourcers"
+    subheadline: "Run unlimited commercial lease abstracts through your own AI for $399/month flat. 50 abstracts included, $5 each after, no per-document surprises."
+    cta: "Start Your $399 Trial"
+    pain_points:
+      - "Outsourced abstracts cost $200-500 each — $3k-15k/month at typical mid-market volume"
+      - "Enterprise lease platforms (Visual Lease, MRI Contract Intelligence, Leasecake) start at $5k+/month"
+      - "Mid-market brokerages are stuck overpaying outsourcers or under-tooled on enterprise software"
+    promise: "Replace your Datapoint or Lease Probe bill with one $399 line item."
+    proof: "$399/mo equals roughly 1.3 outsourced abstracts. The average mid-market broker runs 15-30 abstracts a month."
+    urgency: "Every outsourced abstract this month is margin you're handing to someone else."
+    pricing_amount: 399
+    pricing_model: subscription
+  - slug: confidential
+    headline: "Your Lease Terms Never Leave Your Team"
+    subheadline: "AI abstraction with per-field confidence scoring routes uncertain fields to your in-house review queue — not to an outsourced contractor reading your tenant's rent roll."
+    cta: "Abstract Your Lease Privately"
+    pain_points:
+      - "Outsourced abstraction services hand your clients' lease terms to overseas contractors you cannot audit"
+      - "You have no visibility into who at Datapoint or Lease Probe is reading your sensitive option-to-extend, NNN, and rent escalation clauses"
+      - "Confidential rent roll data and tenant terms should never sit unattended on a stranger's screen"
+    promise: "Sensitive lease terms stay between you, your AI extractor, and your in-house reviewer — no third-party humans in the loop."
+    proof: "Per-field confidence scoring means uncertain fields stay in your review queue; only your team decides what's final. Nothing low-confidence ever leaves your tenancy."
+    urgency: "Every lease you outsource is one more set of confidential terms on someone else's desk."
+    pricing_amount: 399
+    pricing_model: subscription
 
 # --- 6. Funnel ---
-# funnel:
-#   reach:
-#     metric: "TODO: Top-of-funnel metric (e.g., Ad CTR)"
-#     threshold: "TODO: Pass/fail (e.g., > 2%)"
-#     available_from: L1
-#   demand:
-#     metric: "TODO: Signup/interest metric"
-#     threshold: "TODO: Pass/fail (e.g., > 5%)"
-#     available_from: L1
-#   monetize:
-#     metric: "TODO: Revenue/pricing metric"
-#     threshold: "TODO: Pass/fail (e.g., > 7%)"
-#     available_from: L2
-#   retain:
-#     metric: "TODO: Retention metric"
-#     threshold: "TODO: Pass/fail (e.g., > 30%)"
-#     available_from: L3
-# decision_framework:
-#   scale: "TODO: When to scale (e.g., All tested dimensions >= threshold)"
-#   refine: "TODO: When to refine (e.g., Bottleneck ratio >= 0.7)"
-#   pivot: "TODO: When to pivot (e.g., Bottleneck ratio < 0.7)"
-#   kill: "TODO: When to kill (e.g., Top-funnel < 0.5)"
+# Thresholds derive from the highest-priority hypothesis per category.
+funnel:
+  available_from:
+    reach: L1
+    demand: L1
+    activate: L2
+    monetize: L2
+    retain: L3
+  decision_framework:
+    scale: "All tested dimensions >= 1.0"
+    kill: "Any top-funnel (REACH or DEMAND) < 0.5"
+    pivot: "2+ dimensions < 0.8"
+    refine: "1+ dimensions < 1.0 but fewer than 2 below 0.8"
 
 # --- 7. Stack + Deploy ---
 # Per-service values (runtime, hosting, ui, testing) live under services[].
@@ -139,16 +378,18 @@ stack:
       hosting: vercel           # Where the app is deployed — leave default
       ui: shadcn               # UI component library — leave default
       testing: playwright      # Page-load smoke tests — created by bootstrap
-  database: supabase           # Database and backend — leave default
-  auth: supabase               # Login/signup system — leave default
-  # auth_providers:            # OAuth providers (e.g., [google, github]). Omit for email-only auth.
-  #   - google
-  #   - github
-  analytics: posthog           # Usage tracking — leave default
-  # payment: stripe            # Uncomment if your experiment involves payments
-  # email: resend              # Uncomment for welcome email + activation nudge
+  database: supabase           # Postgres + Row-Level Security; stores users, abstracts, abstract_fields.
+  auth: supabase               # Email/password + Google OAuth.
+  auth_providers:
+    - google
+  analytics: posthog           # Page-level and event-level analytics.
+  payment: stripe              # $399/mo subscription + $5/abstract overage (Level 3 monetize hypothesis).
+  email: resend                # Welcome email after Stripe checkout completes.
+
+# --- Target Geography ---
+target_geo: [US, CA]           # CRE market focus — US + Canada commercial leasing conventions.
 
 deploy:
   url: null
   repo: null
-  domain: null               # Parent domain for hosting + email. Default: draftlabs.org
+  domain: null                 # Parent domain for hosting + email. Default: draftlabs.org
