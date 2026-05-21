@@ -98,7 +98,7 @@ async function loadExportContext(
   // Tally previous exports for this abstract+user to enforce the free-tier cap.
   // `exports` is a side-table populated by the export route in B3; gracefully
   // tolerate its absence pre-wire by treating the count as 0.
-  let existingExportCount = 0;
+  let existingExportCount: number;
   try {
     const { data: exports } = await supabase
       .from("exports")

@@ -39,7 +39,7 @@ function handleRadioGroupKey<T extends string>(
   const last = values.length - 1;
   if (last < 0) return;
   const currentIdx = Math.max(0, values.indexOf(current));
-  let nextIdx: number | null = null;
+  let nextIdx: number;
   switch (event.key) {
     case "ArrowRight":
     case "ArrowDown":
@@ -58,7 +58,6 @@ function handleRadioGroupKey<T extends string>(
     default:
       return;
   }
-  if (nextIdx === null) return;
   event.preventDefault();
   onChange(values[nextIdx]);
   const container = (event.currentTarget as HTMLElement).parentElement;

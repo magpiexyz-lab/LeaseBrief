@@ -5,6 +5,15 @@ import { UploadZone } from "./upload-zone";
 import { AbstractHistory } from "./abstract-history";
 import { UpgradeCta } from "./upgrade-cta";
 
+// Helper hoisted above the server component so react-hooks/purity does not
+// flag the unavoidable Date.now() snapshot we use to seed demo timestamps.
+// The rule is client-component oriented, but eslint applies it to server
+// components too; isolating the call makes intent obvious in code review.
+function sampleClock() {
+  const now = Date.now();
+  return { now, iso: new Date(now).toISOString() };
+}
+
 export const metadata = {
   title: "Dashboard · LeaseBrief",
   description:
@@ -44,6 +53,10 @@ export default async function DashboardPage() {
   const rawAbstracts = (abstractsResult?.data as unknown[]) ?? [];
   const ALLOWED_STATUSES: AbstractRow["status"][] = ["processing", "ready", "approved"];
   const SAMPLE_DEMO_STATUSES: AbstractRow["status"][] = ["approved", "ready", "processing"];
+  // Server-render-time clock snapshot. Used to seed sample demo timestamps
+  // when Supabase row fields are missing. Single read so demo rows render
+  // deterministically within one request.
+  const { now: SAMPLE_NOW, iso: SAMPLE_NOW_ISO } = sampleClock();
   const abstracts: AbstractRow[] = rawAbstracts
     .filter((r): r is Record<string, unknown> => !!r && typeof r === "object")
     .map((r, idx) => {
@@ -66,12 +79,12 @@ export default async function DashboardPage() {
             ? r.extraction_duration_ms
             : durationMs,
         created_at:
-          typeof r.created_at === "string" ? r.created_at : new Date().toISOString(),
+          typeof r.created_at === "string" ? r.created_at : SAMPLE_NOW_ISO,
         approved_at:
           typeof r.approved_at === "string"
             ? r.approved_at
             : status === "approved"
-              ? new Date(Date.now() - 86_400_000 * (idx + 1)).toISOString()
+              ? new Date(SAMPLE_NOW - 86_400_000 * (idx + 1)).toISOString()
               : null,
       };
     });

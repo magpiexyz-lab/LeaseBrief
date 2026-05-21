@@ -1,6 +1,5 @@
 import { fal } from "@fal-ai/client";
 import { writeFile, mkdir } from "fs/promises";
-import { readFile } from "fs/promises";
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
