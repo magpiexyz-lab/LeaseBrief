@@ -1,0 +1,32 @@
+# LeaseBrief
+
+> Drag-and-drop AI tool that turns commercial real estate lease PDFs into structured 30-field abstracts in 90 seconds, with per-field confidence scoring and one-click export to Yardi, MRI, and AppFolio Commercial.
+
+## What it does
+
+Mid-market commercial real estate brokers spend 4-8 hours of in-house time per lease — or pay $200-500 per document to outsourced services like Datapoint and Lease Probe — to abstract each commercial lease into structured fields. Enterprise software (MRI Contract Intelligence/Leverton, Visual Lease, Leasecake) starts at $1-5k/month and is built for portfolio admin, not the broker workflow.
+
+LeaseBrief sits in the mid-market software-only tier:
+
+- **Upload** a commercial lease PDF via drag-and-drop.
+- **Extract** 30 fields (rent, escalations, term, options, NNN, CAM, free rent, security deposit, etc.) with per-field confidence scoring in under 90 seconds.
+- **Review** low-confidence fields (confidence < 0.85) in an in-product review queue — keep your tenant's terms in-house, not in an offshore reviewer's queue.
+- **Export** to Yardi, MRI, or AppFolio Commercial CSV formats with no manual re-entry.
+
+## Who it is for
+
+Mid-market CRE brokers and lease administrators at firms with 10-50 agents handling 10-30 lease abstractions per month. CCIM and SIOR designation holders. Firms processing leases in office, retail, and industrial property classes.
+
+## Pricing
+
+$399 / month for 50 abstracts. $5 per additional abstract. No setup fees, no per-document outsourcing markup.
+
+## Differentiation
+
+- **vs. outsourcers (Datapoint, Lease Probe, RE BackOffice):** software-only — your lease terms stay with your team. 90 seconds vs 24-72 hour turnaround. $399 flat vs $200-500 per lease.
+- **vs. enterprise platforms (MRI Contract Intelligence, Visual Lease, Prophia):** built for broker workflow, not portfolio admin. No $5k+/mo seat commitments.
+- **vs. per-lease AI tools (Lextract, LeaseLens):** subscription pricing, integrated review queue, native exports to Yardi / MRI / AppFolio — not just a CSV download.
+
+## Status
+
+Live MVP. Iterating on the funnel before scaling distribution.

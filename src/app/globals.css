@@ -4,9 +4,23 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* =====================================================================
+   LeaseBrief — "Counsel" design system
+   Lineage: Stripe x Linear x Ramp.
+   Stance: editorial-serious, dossier-grade, warm-neutral parchment +
+   ink navy + brass accent. Mid-market CRE brokers as audience.
+   Full visual brief: .runs/current-visual-brief.md
+   ===================================================================== */
+
 @theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
+    /* Typography — three distinct typefaces, NOT framework defaults */
+    --font-display: var(--font-display);
+    --font-body: var(--font-body);
+    --font-mono: var(--font-mono);
+    --font-sans: var(--font-body);    /* Tailwind font-sans -> Inter Tight */
+    --font-heading: var(--font-display); /* Tailwind font-heading -> Fraunces */
+
+    /* shadcn color token contract */
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -38,6 +52,18 @@
     --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
+
+    /* LeaseBrief brand tokens */
+    --color-ink: var(--ink);
+    --color-brass: var(--brass);
+    --color-parchment: var(--parchment);
+    --color-vellum: var(--vellum);
+    --color-ash: var(--ash);
+    --color-whisper: var(--whisper);
+    --color-confidence-high: var(--confidence-high);
+    --color-review-amber: var(--review-amber);
+
+    /* Radius scale */
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -45,85 +71,291 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+    --radius-pill: 9999px;
+    --radius-card: 14px;
+    --radius-input: 10px;
+    --radius-chip: 6px;
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+    /* ---- LeaseBrief brand color primitives (raw values) ---- */
+    --ink: oklch(0.22 0.04 250);              /* #1a2238 — deep navy ink, lease blueline */
+    --brass: oklch(0.72 0.13 75);             /* #c89855 — sophisticated brass accent */
+    --parchment: oklch(0.975 0.008 85);       /* #f7f4ec — warm document stock background */
+    --vellum: oklch(0.99 0.005 85);           /* #fdfcf8 — even paler card surface */
+    --ash: oklch(0.90 0.012 80);              /* #e6e1d4 — hairline borders */
+    --whisper: oklch(0.45 0.02 250);          /* #5d6478 — muted text, ink-derived */
+    --confidence-high: oklch(0.58 0.12 155);  /* #3d8a5a — viridian for confidence >=0.85 */
+    --review-amber: oklch(0.73 0.15 70);      /* #d59a3a — review-queue indicator */
+
+    /* ---- shadcn token contract mapped to brand ---- */
+    --background: var(--parchment);
+    --foreground: var(--ink);
+
+    --card: var(--vellum);
+    --card-foreground: var(--ink);
+
+    --popover: var(--vellum);
+    --popover-foreground: var(--ink);
+
+    --primary: var(--ink);                  /* CUSTOM override — was oklch(0.205 0 0) */
+    --primary-foreground: var(--parchment);
+
+    --secondary: oklch(0.94 0.012 80);      /* slightly darker parchment for secondary surfaces */
+    --secondary-foreground: var(--ink);
+
+    --muted: var(--ash);
+    --muted-foreground: var(--whisper);
+
+    --accent: var(--brass);                 /* Brass is the accent — used sparingly for CTA */
+    --accent-foreground: var(--ink);
+
+    --destructive: oklch(0.58 0.20 25);     /* cinnabar — kept distinct from review-amber */
+
+    --border: oklch(0.22 0.04 250 / 0.08);  /* ink at 8% — hairline rules */
+    --input: var(--ash);
+    --ring: var(--brass);                   /* focus rings are brass */
+
+    /* Data viz palette — brass, ink, viridian, amber, whisper (5 max) */
+    --chart-1: var(--brass);
+    --chart-2: var(--ink);
+    --chart-3: var(--confidence-high);
+    --chart-4: var(--review-amber);
+    --chart-5: var(--whisper);
+
+    --radius: 0.875rem;                     /* 14px — LeaseBrief card radius */
+
+    /* Sidebar — keep coherent with brand */
+    --sidebar: var(--vellum);
+    --sidebar-foreground: var(--ink);
+    --sidebar-primary: var(--ink);
+    --sidebar-primary-foreground: var(--parchment);
+    --sidebar-accent: oklch(0.94 0.012 80);
+    --sidebar-accent-foreground: var(--ink);
+    --sidebar-border: oklch(0.22 0.04 250 / 0.08);
+    --sidebar-ring: var(--brass);
+
+    /* ---- Brass-tinted shadow system (NOT neutral gray) ---- */
+    --shadow-light:
+        0 1px 2px rgba(200, 152, 85, 0.06),
+        0 2px 4px rgba(26, 34, 56, 0.04);
+
+    --shadow-medium:
+        0 0 0 1px rgba(26, 34, 56, 0.05),
+        0 4px 8px rgba(200, 152, 85, 0.08),
+        0 8px 16px rgba(26, 34, 56, 0.06);
+
+    --shadow-heavy:
+        0 0 0 1px rgba(26, 34, 56, 0.06),
+        0 8px 16px rgba(200, 152, 85, 0.12),
+        0 16px 32px rgba(26, 34, 56, 0.10),
+        0 32px 64px rgba(26, 34, 56, 0.05);
+
+    /* ---- Easing (snappy character, expo curves) ---- */
+    --ease-snap: cubic-bezier(0.16, 1, 0.3, 1);          /* expo-out — primary */
+    --ease-snap-in: cubic-bezier(0.7, 0, 0.84, 0);       /* expo-in — exits */
+    --ease-snap-inout: cubic-bezier(0.4, 0, 0.2, 1);     /* material — micro */
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    /* Dark mode deferred — light mode is canonical for CRE brokers.
+       Falls back to inverted ink-on-parchment with brass accent preserved. */
+    --background: oklch(0.18 0.025 250);              /* deep ink-toned background */
+    --foreground: var(--parchment);
+
+    --card: oklch(0.24 0.03 250);
+    --card-foreground: var(--parchment);
+
+    --popover: oklch(0.24 0.03 250);
+    --popover-foreground: var(--parchment);
+
+    --primary: var(--brass);                          /* brass becomes primary surface in dark */
+    --primary-foreground: var(--ink);
+
+    --secondary: oklch(0.28 0.03 250);
+    --secondary-foreground: var(--parchment);
+
+    --muted: oklch(0.30 0.025 250);
+    --muted-foreground: oklch(0.72 0.02 85);
+
+    --accent: var(--brass);
+    --accent-foreground: var(--ink);
+
+    --destructive: oklch(0.68 0.22 25);
+
+    --border: oklch(1 0 0 / 8%);
+    --input: oklch(1 0 0 / 12%);
+    --ring: var(--brass);
+
+    --chart-1: var(--brass);
+    --chart-2: oklch(0.85 0.04 85);
+    --chart-3: var(--confidence-high);
+    --chart-4: var(--review-amber);
+    --chart-5: oklch(0.72 0.02 85);
+
+    --sidebar: oklch(0.24 0.03 250);
+    --sidebar-foreground: var(--parchment);
+    --sidebar-primary: var(--brass);
+    --sidebar-primary-foreground: var(--ink);
+    --sidebar-accent: oklch(0.28 0.03 250);
+    --sidebar-accent-foreground: var(--parchment);
+    --sidebar-border: oklch(1 0 0 / 8%);
+    --sidebar-ring: var(--brass);
+
+    /* Dark-mode shadows: subtle glows (translucent), not heavy drops */
+    --shadow-light:
+        0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 2px 4px rgba(0, 0, 0, 0.30);
+
+    --shadow-medium:
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 4px 12px rgba(0, 0, 0, 0.35),
+        0 0 24px rgba(200, 152, 85, 0.08);
+
+    --shadow-heavy:
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 12px 28px rgba(0, 0, 0, 0.45),
+        0 0 48px rgba(200, 152, 85, 0.10);
 }
 
+/* =====================================================================
+   Base layer
+   ===================================================================== */
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+
+    html {
+        font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+        font-feature-settings: "ss01" on, "cv11" on;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
     }
-  html {
-    @apply font-sans;
+
+    body {
+        @apply bg-background text-foreground;
+        font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+        font-feature-settings: "ss01" on, "cv11" on;
+        line-height: 1.58;
+        letter-spacing: -0.05px;
+        position: relative;
+    }
+
+    /* Paper-grain noise overlay — fixed, low opacity, recognizable as
+       paper texture only on close inspection. SVG inline turbulence. */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.025;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.13  0 0 0 0 0.22  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    /* Display typography — Fraunces with optical sizing, compressed leading,
+       negative tracking at large sizes. */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-display), ui-serif, Georgia, serif;
+        font-feature-settings: "ss01" on, "kern" on;
+        font-optical-sizing: auto;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        color: var(--foreground);
+    }
+
+    h1 { letter-spacing: -0.03em; line-height: 1.04; }
+    h2 { letter-spacing: -0.025em; line-height: 1.06; }
+    h3 { letter-spacing: -0.02em; line-height: 1.10; }
+    h4, h5, h6 { letter-spacing: -0.015em; line-height: 1.15; }
+
+    /* Mono — data display (rent amounts, confidence scores, IDs) */
+    code, kbd, samp, pre,
+    .font-mono, [data-mono] {
+        font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-feature-settings: "ss01" on, "ss02" on, "calt" on;
+    }
+
+    /* Selection — brass-tinted */
+    ::selection {
+        background: oklch(0.72 0.13 75 / 0.30);
+        color: var(--ink);
+    }
+
+    /* Focus ring — brass, 2px, smooth */
+    *:focus-visible {
+        outline: 2px solid var(--brass);
+        outline-offset: 2px;
+        border-radius: var(--radius-input);
+        transition: outline-offset 120ms var(--ease-snap-inout);
+    }
+
+    /* Reduced-motion respect — applied globally */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+}
+
+/* =====================================================================
+   Utility helpers — used across pages by subagents
+   ===================================================================== */
+@layer utilities {
+    /* Brass radial halo — atmospheric depth at hero / CTA moments */
+    .bg-brass-halo {
+        background-image:
+            radial-gradient(
+                ellipse 80% 60% at 80% 0%,
+                rgba(200, 152, 85, 0.10),
+                transparent 60%
+            ),
+            radial-gradient(
+                ellipse 60% 50% at 10% 100%,
+                rgba(200, 152, 85, 0.06),
+                transparent 55%
+            );
+    }
+
+    /* Ink halo — alternative atmospheric tint for inner pages */
+    .bg-ink-halo {
+        background-image:
+            radial-gradient(
+                ellipse 70% 50% at 50% 0%,
+                rgba(26, 34, 56, 0.04),
+                transparent 60%
+            );
+    }
+
+    /* Card with brass-tinted ring shadow (preferred over CSS border) */
+    .ring-card {
+        box-shadow: var(--shadow-medium);
+    }
+    .ring-card-heavy {
+        box-shadow: var(--shadow-heavy);
+    }
+    .ring-card-light {
+        box-shadow: var(--shadow-light);
+    }
+
+    /* Hairline ink rule — section dividers, document-feel separators */
+    .rule-ink {
+        border-color: oklch(0.22 0.04 250 / 0.08);
+    }
+
+    /* Eyebrow tag — uppercase tracked label above section headers */
+    .eyebrow {
+        font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--whisper);
     }
 }
