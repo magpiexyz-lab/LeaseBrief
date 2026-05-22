@@ -141,34 +141,6 @@ export default function SignupPage() {
         </div>
       ) : (
         <>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleGoogleSignup}
-            disabled={oauthLoading !== null || loading}
-            className="group/google relative h-12 w-full rounded-[10px] border-[var(--ash)] bg-[var(--vellum)] px-4 text-base font-medium text-[var(--ink)] shadow-[0_1px_2px_rgba(200,152,85,0.06),0_2px_4px_rgba(26,34,56,0.04)] transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-px hover:border-[var(--brass)]/60 hover:shadow-[0_4px_8px_rgba(200,152,85,0.12),0_8px_16px_rgba(26,34,56,0.06)] focus-visible:ring-[var(--brass)]/40"
-          >
-            <span className="flex items-center gap-3">
-              <GoogleGlyph />
-              <span>
-                {oauthLoading === "google"
-                  ? "Redirecting to Google…"
-                  : "Continue with Google"}
-              </span>
-            </span>
-          </Button>
-
-          <div className="relative my-7" aria-hidden>
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-[var(--ash)]" />
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-[var(--card)] px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--whisper)]">
-                or with email
-              </span>
-            </div>
-          </div>
-
           <form onSubmit={handleSignup} className="space-y-5" noValidate>
             <div className="space-y-2">
               <Label
@@ -253,7 +225,7 @@ export default function SignupPage() {
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">
-                  Open the console
+                  Create account
                   <span
                     aria-hidden
                     className="transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/cta:translate-x-0.5"
