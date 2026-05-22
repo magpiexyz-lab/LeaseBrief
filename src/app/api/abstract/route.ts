@@ -35,8 +35,27 @@ export const abstractSchema = z.object({
   file_name: z.string().min(1).max(500).optional(),
 });
 export type CreateAbstractResponse = { abstract_id: string };
+export type QuotaExceededResponse = {
+  error: "Monthly quota reached";
+  message: string;
+  current_count: number;
+  quota: number;
+  plan: "free" | "pro";
+};
 
 const MAX_BYTES = 50 * 1024 * 1024; // 50 MB — mirrors client-side check
+
+// Plan defaults — must mirror dashboard `quotaMonthly ?? (plan === 'pro' ? 50 : 3)`
+// AND the Stripe webhook (which sets quota_monthly=50 on upgrade).
+const FREE_TIER_QUOTA = 3;
+const PRO_TIER_QUOTA = 50;
+
+function startOfCurrentMonthIso(): string {
+  const now = new Date();
+  return new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+  ).toISOString();
+}
 
 // The 30 LeaseBrief field names. Order matches the abstract-detail page's
 // grouping (rent, term, options, NNN/CAM, etc.).
@@ -106,6 +125,53 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // ── Quota gate (closes the HIGH security finding from /verify Phase 1) ─
+  // Free tier defaults to 3 abstracts/month, Pro tier to 50. The Stripe
+  // webhook (b-09) writes `quota_monthly` on plan upgrade; we trust the
+  // column when present and fall back to the plan default otherwise.
+  // We check BEFORE parsing the multipart body so a spam loop hitting the
+  // monthly cap can't burn the 50 MB upload budget either.
+  const { data: userRow } = await supabase
+    .from("users")
+    .select("plan, quota_monthly")
+    .eq("id", user.id)
+    .maybeSingle();
+  const plan: "free" | "pro" =
+    (userRow as { plan?: string } | null)?.plan === "pro" ? "pro" : "free";
+  const quota =
+    (userRow as { quota_monthly?: number | null } | null)?.quota_monthly ??
+    (plan === "pro" ? PRO_TIER_QUOTA : FREE_TIER_QUOTA);
+
+  const { count: monthlyCount, error: countErr } = await supabase
+    .from("abstracts")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .gte("created_at", startOfCurrentMonthIso());
+
+  if (countErr) {
+    console.error("abstract quota count failed:", countErr.message);
+    return NextResponse.json(
+      { error: "Could not verify monthly quota" },
+      { status: 500 },
+    );
+  }
+
+  const currentCount = monthlyCount ?? 0;
+  if (currentCount >= quota) {
+    const message =
+      plan === "pro"
+        ? `You've used all ${quota} abstracts this month. $5/overage billing applies on the next upload — contact support to enable.`
+        : `Free tier allows ${quota} abstracts per month. Upgrade to Pro for ${PRO_TIER_QUOTA} per month plus $5/overage.`;
+    const body: QuotaExceededResponse = {
+      error: "Monthly quota reached",
+      message,
+      current_count: currentCount,
+      quota,
+      plan,
+    };
+    return NextResponse.json(body, { status: 402 });
   }
 
   // Parse multipart form. fail-closed on malformed bodies.
