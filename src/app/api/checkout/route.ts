@@ -6,7 +6,7 @@ import { clientIpFromHeaders, rateLimit } from "@/lib/rate-limit";
 import { trackServerEvent } from "@/lib/analytics-server";
 
 // POST /api/checkout — b-07. Creates a Stripe Checkout session for the Pro
-// plan ($99/mo + $5 overage). Returns `{ url }` for the client to redirect.
+// plan ($19/mo + $5 overage). Returns `{ url }` for the client to redirect.
 //
 // Pricing is authoritative on the server (Stripe metadata.amount_cents flows
 // to the webhook handler; never trust client-submitted prices — see
@@ -20,10 +20,10 @@ export type CreateCheckoutRequest = z.infer<typeof checkoutSchema>;
 export type CreateCheckoutResponse = { url: string };
 
 // Plan price table — server-only, never derived from client input.
-// $99/mo with $5/overage is encoded as the up-front session amount; recurring
+// $19/mo with $5/overage is encoded as the up-front session amount; recurring
 // subscription billing is wired by /deploy when STRIPE_PRICE_ID is provided.
 const PLAN_PRICES: Record<string, { amount_cents: number; label: string }> = {
-  pro: { amount_cents: 9900, label: "LeaseBrief Pro — 50 abstracts/mo" },
+  pro: { amount_cents: 1900, label: "LeaseBrief Pro — 50 abstracts/mo" },
 };
 
 export async function POST(request: Request) {

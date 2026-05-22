@@ -40,7 +40,7 @@ export function UpgradeCta({
         >
           Replace your{" "}
           <span className="italic text-[var(--brass)]">$200–500 / lease</span> outsourcer bill with
-          one $99 line item.
+          one $19 line item.
         </h3>
         <p className="max-w-2xl text-[15px] leading-[1.55] text-muted-foreground">
           Unlock unlimited extraction speed, the full review queue, and exports to Yardi, MRI, and
@@ -50,7 +50,7 @@ export function UpgradeCta({
 
         <div className="mt-1 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <PricePill label="Plan" value="Pro" mono={false} accent />
-          <PricePill label="Monthly" value="$99" />
+          <PricePill label="Monthly" value="$19" />
           <PricePill label="Overage / lease" value="$5" />
         </div>
 

@@ -115,8 +115,17 @@ export function AbstractDetailView({
   async function handleApprove() {
     if (approvalState !== "draft") return;
     setApprovalState("approving");
-    // Brief simulated latency so the user sees the choreography.
-    await new Promise((resolve) => window.setTimeout(resolve, 420));
+    // Persist the approval server-side so the dashboard, /export, and the
+    // funnel see status=approved. We tolerate a 4xx from the API (e.g. demo
+    // IDs that don't exist in Supabase) — the UI still flips to "approved"
+    // so the user gets the visual confirmation.
+    try {
+      await fetch(`/api/abstract/${encodeURIComponent(abstract.id)}/approve`, {
+        method: "POST",
+      });
+    } catch (err) {
+      console.error("[approve] network error", err);
+    }
     trackAbstractCompleted({
       abstract_id: abstract.id,
       review_fields_edited: reviewerEditedCount,
@@ -450,7 +459,7 @@ export function AbstractDetailView({
           <div className="relative flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
             <div className="max-w-2xl space-y-3">
               <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--whisper)]">
-                The Trade · $99 / mo
+                The Trade · $19 / mo
               </span>
               <h2 className="font-display text-[28px] font-medium leading-[1.1] tracking-[-0.02em] md:text-[32px]">
                 Run 50 abstracts every month. $5 each after.
@@ -458,7 +467,7 @@ export function AbstractDetailView({
               <p className="text-[15px] text-[var(--ink)]/72">
                 Outsourced abstracts run{" "}
                 <span className="font-mono text-[var(--ink)]">$200–500</span>{" "}
-                per document. Replace that line item with one $99 / mo
+                per document. Replace that line item with one $19 / mo
                 subscription and unlock unlimited exports across Yardi, MRI,
                 and AppFolio Commercial.
               </p>

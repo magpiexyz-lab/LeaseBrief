@@ -23,7 +23,7 @@ import { trackLandingView } from "@/lib/events";
  * Anchor figures — used in copy below.
  * Source: experiment.yaml h-04 / b-07 / variant `cost`.
  */
-const PRO_MONTHLY_PRICE_USD = 99;
+const PRO_MONTHLY_PRICE_USD = 19;
 const PRO_INCLUDED_ABSTRACTS = 50;
 const PRO_OVERAGE_PRICE_USD = 5;
 const OUTSOURCED_PRICE_MIN_USD = 200;
@@ -48,32 +48,6 @@ export function PricingClient() {
         aria-hidden
         className="bg-brass-halo absolute inset-x-0 top-0 -z-10 h-[640px]"
       />
-
-      {/* ───────────── Header strip ───────────── */}
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 pt-8 pb-4 md:px-8">
-        <Link
-          href="/"
-          className="font-display text-xl font-semibold tracking-tight text-foreground"
-        >
-          <span className="text-foreground">L</span>
-          <span className="text-foreground">B</span>
-          <span className="ml-1 inline-block h-[1.5px] w-6 align-middle bg-accent" />
-        </Link>
-        <nav className="hidden items-center gap-7 text-sm text-foreground/80 md:flex">
-          <Link
-            href="/dashboard"
-            className="transition-colors hover:text-foreground"
-          >
-            Dashboard
-          </Link>
-          <Link
-            href="/login"
-            className="transition-colors hover:text-foreground"
-          >
-            Sign in
-          </Link>
-        </nav>
-      </header>
 
       <main className="mx-auto max-w-6xl px-6 pb-32 md:px-8">
         {/* ───────────── Hero ───────────── */}

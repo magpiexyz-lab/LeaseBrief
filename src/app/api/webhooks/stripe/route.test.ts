@@ -147,7 +147,7 @@ describe("POST /api/webhooks/stripe — checkout.session.completed", () => {
           metadata: {
             user_id: overrides.userId ?? "user-456",
             plan: "pro",
-            amount_cents: "9900",
+            amount_cents: "1900",
           },
           customer: overrides.customer ?? "cus_TEST",
           customer_details:
@@ -209,7 +209,7 @@ describe("POST /api/webhooks/stripe — idempotency", () => {
       type: "checkout.session.completed",
       data: {
         object: {
-          metadata: { user_id: "user-456", plan: "pro", amount_cents: "9900" },
+          metadata: { user_id: "user-456", plan: "pro", amount_cents: "1900" },
           customer: "cus_REPLAY",
           customer_details: { email: "alice@example.com", name: "Alice" },
         },

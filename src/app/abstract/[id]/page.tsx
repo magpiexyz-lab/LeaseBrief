@@ -4,6 +4,8 @@ import {
   DEMO_ABSTRACT,
   DEMO_FIELD_CATEGORIES,
 } from "./demo-data";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import type { AbstractRow } from "@/lib/types";
 
 // Authoring contract: this is a dynamic-segment page whose loader may consult
 // auth state (Supabase row-level security). Without `force-dynamic` Next.js
@@ -41,12 +43,33 @@ interface PageProps {
 export default async function AbstractDetailPage({ params }: PageProps) {
   const { id } = await params;
 
-  // DEMO_MODE short-circuit. Real Supabase fetch is wired by scaffold-wire
-  // post-fan-out via a server action against `abstracts` + `abstract_fields`.
-  // For bootstrap demo we serve the canonical sample lease so any [id] route
-  // renders a complete abstract — critical for sitemap-indexable static
-  // demo URLs and for the golden_path final step rendering.
-  const abstract = { ...DEMO_ABSTRACT, id };
+  // Try to read the real abstract row from Supabase. If the row exists,
+  // mirror its status/timestamps into the view so /approve and /export can
+  // round-trip correctly. The field grid still uses the demo categories —
+  // wiring `abstract_fields` rows into editorial categories is /change scope
+  // because the API's snake_case field_name keys don't yet map to the
+  // human-readable category labels.
+  const supabase = await createServerSupabaseClient();
+  const { data: realRow } = await supabase
+    .from("abstracts")
+    .select("id, status, extraction_duration_ms, created_at, approved_at, pdf_url, user_id")
+    .eq("id", id)
+    .maybeSingle();
+
+  const real = realRow as AbstractRow | null;
+  const abstract: AbstractRow = real
+    ? {
+        ...DEMO_ABSTRACT,
+        ...real,
+        // Preserve the real id, status, and timestamps over the demo defaults.
+        id: real.id,
+        status: real.status,
+        extraction_duration_ms:
+          real.extraction_duration_ms ?? DEMO_ABSTRACT.extraction_duration_ms,
+        created_at: real.created_at ?? DEMO_ABSTRACT.created_at,
+        approved_at: real.approved_at ?? DEMO_ABSTRACT.approved_at,
+      }
+    : { ...DEMO_ABSTRACT, id };
   const categories = DEMO_FIELD_CATEGORIES;
 
   // Empty-state image path from .runs/image-manifest.json. Used inside the

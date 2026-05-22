@@ -323,7 +323,7 @@ variants:
     promise: "Get your afternoon back — every lease becomes a 90-second job."
     proof: "The same 30-field abstract Datapoint charges $200-500 per document for, returned by AI in 90 seconds with per-field confidence."
     urgency: "Every lease you're still abstracting by hand is a deal you're closing slower."
-    pricing_amount: 99
+    pricing_amount: 19
     pricing_model: subscription
   - slug: cost
     headline: "Stop Paying $300 Per Lease to Outsourcers"
@@ -336,7 +336,7 @@ variants:
     promise: "Replace your Datapoint or Lease Probe bill with one $399 line item."
     proof: "$399/mo equals roughly 1.3 outsourced abstracts. The average mid-market broker runs 15-30 abstracts a month."
     urgency: "Every outsourced abstract this month is margin you're handing to someone else."
-    pricing_amount: 99
+    pricing_amount: 19
     pricing_model: subscription
   - slug: confidential
     headline: "Your Lease Terms Never Leave Your Team"
@@ -349,7 +349,7 @@ variants:
     promise: "Sensitive lease terms stay between you, your AI extractor, and your in-house reviewer — no third-party humans in the loop."
     proof: "Per-field confidence scoring means uncertain fields stay in your review queue; only your team decides what's final. Nothing low-confidence ever leaves your tenancy."
     urgency: "Every lease you outsource is one more set of confidential terms on someone else's desk."
-    pricing_amount: 99
+    pricing_amount: 19
     pricing_model: subscription
 
 # --- 6. Funnel ---

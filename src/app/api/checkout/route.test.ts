@@ -7,7 +7,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 //   1. Auth required (401 when no Supabase user)
 //   2. Rate-limited (429 on Nth+1 burst within the window)
 //   3. Calls stripe.checkout.sessions.create with success_url/cancel_url
-//      shape and the expected unit_amount (priceId equivalent — Pro = 9900¢)
+//      shape and the expected unit_amount (priceId equivalent — Pro = 1900¢)
 //   4. Returns { url } from the Stripe session
 //   5. Fires server-side `checkout_started` via trackServerEvent
 
@@ -119,7 +119,7 @@ describe("POST /api/checkout — rate limiting", () => {
 });
 
 describe("POST /api/checkout — Stripe integration", () => {
-  it("calls stripe.checkout.sessions.create with the Pro price (9900¢) and proper success/cancel URLs", async () => {
+  it("calls stripe.checkout.sessions.create with the Pro price (1900¢) and proper success/cancel URLs", async () => {
     setupMocks();
     const { POST } = await loadRoute();
     await POST(checkoutRequest());
@@ -127,8 +127,8 @@ describe("POST /api/checkout — Stripe integration", () => {
     const params = stripeSessionsCreateMock.mock.calls[0][0];
     expect(params.success_url).toMatch(/dashboard\?upgrade=success$/);
     expect(params.cancel_url).toMatch(/pricing\?upgrade=cancelled$/);
-    // Pro plan price flows via line_items[0].price_data.unit_amount (9900¢).
-    expect(params.line_items[0].price_data.unit_amount).toBe(9900);
+    // Pro plan price flows via line_items[0].price_data.unit_amount (1900¢).
+    expect(params.line_items[0].price_data.unit_amount).toBe(1900);
     // user_id from the cookie session, NOT from the request body.
     expect(params.metadata.user_id).toBe("user-123");
     expect(params.metadata.plan).toBe("pro");

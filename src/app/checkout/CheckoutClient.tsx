@@ -266,7 +266,7 @@ function LoadingPanel({
           </div>
           <div className="shrink-0 text-right">
             <p className="font-mono text-2xl font-medium tracking-tight text-foreground">
-              $99
+              $19
             </p>
             <p className="font-body text-xs text-foreground/55">/ month</p>
           </div>

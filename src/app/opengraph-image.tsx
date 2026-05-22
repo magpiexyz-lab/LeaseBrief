@@ -106,7 +106,7 @@ export default function OpengraphImage() {
               textTransform: "uppercase",
             }}
           >
-            $99 / month
+            $19 / month
           </span>
           <span
             style={{

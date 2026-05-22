@@ -93,6 +93,20 @@ export default async function DashboardPage() {
   const readyCount = abstracts.filter((a) => a.status === "ready").length;
   const inFlight = abstracts.filter((a) => a.status === "processing").length;
 
+  // "Used this month" mirrors the quota gate in /api/abstract: any abstract
+  // created since the start of the current UTC month counts, regardless of
+  // status. Without this, an uploaded-but-not-yet-approved abstract leaves
+  // the chip stuck at 0/3 even though the next upload would 402.
+  const startOfMonthIso = (() => {
+    const now = new Date();
+    return new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+    ).toISOString();
+  })();
+  const monthlyUsed = abstracts.filter(
+    (a) => typeof a.created_at === "string" && a.created_at >= startOfMonthIso,
+  ).length;
+
   const greetingName = userEmail.split("@")[0] || "broker";
   const greetingDisplay =
     greetingName.charAt(0).toUpperCase() + greetingName.slice(1, 24);
@@ -131,7 +145,7 @@ export default async function DashboardPage() {
                   plan === "pro" ? "text-[var(--brass)]" : "text-foreground",
                 ].join(" ")}
               >
-                {plan === "pro" ? "Pro · $99" : "Free trial"}
+                {plan === "pro" ? "Pro · $19" : "Free trial"}
               </span>
             </div>
             <span className="h-8 w-px bg-[oklch(0.22_0.04_250_/_0.10)]" />
@@ -140,7 +154,7 @@ export default async function DashboardPage() {
                 Used this month
               </span>
               <span className="font-mono text-[16px] text-foreground">
-                {completedCount}
+                {monthlyUsed}
                 <span className="text-muted-foreground">
                   {" / "}
                   {quotaMonthly ?? (plan === "pro" ? 50 : 3)}
