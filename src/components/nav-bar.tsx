@@ -126,7 +126,7 @@ export function NavBar() {
   return (
     <nav
       aria-label="Primary"
-      className="flex items-center justify-between border-b border-foreground/8 px-6 py-3 backdrop-blur-sm bg-background/85"
+      className="sticky top-0 z-50 flex items-center justify-between border-b border-foreground/8 px-6 py-3 backdrop-blur-md bg-background/90"
     >
       <Link href="/" className="flex items-center gap-2">
         {/* Brand wordmark — no logo asset exists; an inline mark keeps the

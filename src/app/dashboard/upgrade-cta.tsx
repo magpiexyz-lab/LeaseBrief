@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { WaitlistForm } from "@/components/waitlist-form";
 
 export function UpgradeCta({
-  abstractCount: _abstractCount,
+  abstractCount,
   variant: _variantSlug,
 }: {
   abstractCount: number;
@@ -54,14 +54,16 @@ export function UpgradeCta({
           <PricePill label="Overage / lease" value="$5" />
         </div>
 
-        <div className="mt-2 flex flex-wrap items-center gap-3">
-          <Button
-            type="button"
-            disabled
-            className="h-11 rounded-full bg-[var(--brass)] px-6 text-[14px] font-medium text-[var(--ink)] shadow-[var(--shadow-medium)] disabled:opacity-70"
-          >
-            Coming soon
-          </Button>
+        <div className="mt-2 flex flex-col gap-3">
+          <p className="text-[13px] text-foreground/70">
+            Self-serve checkout opens soon. Drop your work email below and
+            we&apos;ll let you know the moment Pro goes live.
+          </p>
+          <WaitlistForm
+            source="dashboard"
+            abstractCount={abstractCount}
+            ctaLabel="Notify me"
+          />
           <Link
             href="/pricing"
             className="rounded-md px-2 py-1 font-mono text-[12px] uppercase tracking-[0.14em] text-foreground/80 underline-offset-4 transition-colors hover:text-foreground hover:underline"

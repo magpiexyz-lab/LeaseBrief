@@ -126,8 +126,8 @@ function TopNav({
   onCtaClick: () => void;
 }) {
   return (
-    <header className="relative z-20">
-      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-6 md:px-8 md:py-7">
+    <header className="sticky top-0 z-50 backdrop-blur-md bg-[var(--parchment)]/85 border-b border-[rgba(26,34,56,0.06)]">
+      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4 md:px-8 md:py-5">
         <Link href="/" className="group inline-flex items-center gap-3">
           <Monogram size={28} />
           <span
@@ -1557,9 +1557,6 @@ function Footer() {
           <Link href="/login" className="transition-colors hover:text-[var(--ink)]">
             Sign in
           </Link>
-          <a href="mailto:hello@leasebrief.com" className="transition-colors hover:text-[var(--ink)]">
-            Contact
-          </a>
           <span style={{ fontFamily: "var(--font-mono)" }}>
             © {new Date().getFullYear()} LeaseBrief
           </span>

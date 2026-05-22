@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { WaitlistForm } from "@/components/waitlist-form";
 import { trackLandingView } from "@/lib/events";
 
 /**
@@ -201,21 +201,16 @@ export function PricingClient() {
                 </Feature>
               </ul>
 
-              {/* Primary CTA — brass-prominent pill */}
+              {/* Waitlist capture — checkout opens later; collect interest now */}
               <div className="mt-9 flex flex-col gap-3">
-                <Button
-                  disabled
-                  size="lg"
-                  className="group h-14 rounded-pill bg-accent px-7 font-body text-base font-medium text-accent-foreground shadow-[0_0_0_1px_rgba(26,34,56,0.06),0_4px_8px_rgba(200,152,85,0.18),0_8px_16px_rgba(26,34,56,0.08)] disabled:opacity-70"
-                >
-                  <span className="inline-flex items-center gap-2">
-                    Coming soon
-                  </span>
-                </Button>
-                <p className="font-body text-xs text-foreground/55">
-                  Self-serve checkout opens soon. We&apos;ll email everyone on
-                  the waitlist the moment it&apos;s live.
+                <p className="font-body text-sm font-medium text-foreground">
+                  Self-serve checkout opens soon — drop your work email and
+                  we&apos;ll let you know the moment it&apos;s live.
                 </p>
+                <WaitlistForm
+                  source="pricing"
+                  ctaLabel="Notify me"
+                />
               </div>
             </CardContent>
           </Card>
@@ -400,16 +395,11 @@ export function PricingClient() {
                   Cancel after a month if it doesn&apos;t.
                 </p>
               </div>
-              <div className="flex flex-col items-start gap-3 md:items-end">
-                <Button
-                  disabled
-                  size="lg"
-                  className="group h-14 rounded-pill bg-accent px-8 font-body text-base font-medium text-accent-foreground shadow-[0_0_0_1px_rgba(26,34,56,0.06),0_4px_8px_rgba(200,152,85,0.18),0_8px_16px_rgba(26,34,56,0.08)] disabled:opacity-70"
-                >
-                  <span className="inline-flex items-center gap-2">
-                    Coming soon — ${PRO_MONTHLY_PRICE_USD}/mo
-                  </span>
-                </Button>
+              <div className="flex w-full flex-col items-stretch gap-3">
+                <WaitlistForm
+                  source="pricing"
+                  ctaLabel="Notify me"
+                />
                 <Link
                   href="/dashboard"
                   className="font-body text-sm text-foreground/60 underline-offset-4 transition-colors hover:text-foreground hover:underline"

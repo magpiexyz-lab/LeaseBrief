@@ -100,15 +100,17 @@ export default function SignupPage() {
         "Your tenant terms never leave your tenancy.",
       ]}
       footer={
-        <p className="text-sm text-[var(--whisper)]">
-          Already have an account?{" "}
-          <Link
-            href="/login"
-            className="font-medium text-[var(--ink)] underline decoration-[var(--brass)] decoration-2 underline-offset-[6px] transition-colors hover:text-[var(--brass)]"
-          >
-            Log in
-          </Link>
-        </p>
+        success ? null : (
+          <p className="text-sm text-[var(--whisper)]">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="font-medium text-[var(--ink)] underline decoration-[var(--brass)] decoration-2 underline-offset-[6px] transition-colors hover:text-[var(--brass)]"
+            >
+              Log in
+            </Link>
+          </p>
+        )
       }
     >
       {success ? (

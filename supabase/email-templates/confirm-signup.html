@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirm your LeaseBrief account</title>
+</head>
+<body style="margin:0;padding:0;background:#f7f4ec;font-family:Georgia,'Times New Roman',serif;color:#1a2238;line-height:1.6;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#f7f4ec;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="540" style="max-width:540px;background:#fdfaf3;border-radius:14px;box-shadow:0 1px 2px rgba(26,34,56,0.04),0 8px 32px rgba(26,34,56,0.08);overflow:hidden;">
+          <!-- Brass top edge -->
+          <tr><td style="height:3px;background:#c89855;"></td></tr>
+
+          <!-- Header -->
+          <tr>
+            <td style="padding:40px 40px 0 40px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td valign="middle">
+                    <span style="display:inline-block;width:32px;height:32px;border-radius:8px;background:#c89855;color:#1a2238;font-family:Georgia,serif;font-size:18px;font-weight:600;text-align:center;line-height:32px;vertical-align:middle;">§</span>
+                    <span style="margin-left:10px;font-family:Georgia,serif;font-size:18px;font-weight:600;color:#1a2238;vertical-align:middle;">LeaseBrief</span>
+                  </td>
+                  <td align="right" style="font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#8a8a86;">
+                    § Confirm
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 40px 8px 40px;">
+              <h1 style="margin:0 0 12px 0;font-family:Georgia,'Times New Roman',serif;font-size:32px;line-height:1.15;font-weight:600;color:#1a2238;letter-spacing:-0.01em;">
+                Confirm your <em style="color:#c89855;font-style:italic;">work email</em>.
+              </h1>
+              <p style="margin:16px 0 0 0;font-family:Georgia,serif;font-size:16px;line-height:1.6;color:#1a2238;">
+                You're one tap away from your first lease abstract. Confirm the
+                email below and we'll walk you straight into the console.
+              </p>
+            </td>
+          </tr>
+
+          <!-- CTA -->
+          <tr>
+            <td style="padding:28px 40px 8px 40px;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="border-radius:9999px;background:#c89855;box-shadow:0 4px 12px rgba(200,152,85,0.20),inset 0 1px 0 rgba(255,255,255,0.22);">
+                    <a href="{{ .ConfirmationURL }}"
+                       style="display:inline-block;padding:14px 30px;font-family:Georgia,serif;font-size:16px;font-weight:500;color:#1a2238;text-decoration:none;border-radius:9999px;">
+                      Confirm email address →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Fallback link -->
+          <tr>
+            <td style="padding:24px 40px 0 40px;">
+              <p style="margin:0;font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#6b7280;">
+                Button not working? Paste this URL into your browser:<br>
+                <a href="{{ .ConfirmationURL }}" style="word-break:break-all;font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:12px;color:#c89855;text-decoration:none;">{{ .ConfirmationURL }}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Proof points -->
+          <tr>
+            <td style="padding:32px 40px 0 40px;">
+              <div style="border-top:1px solid rgba(26,34,56,0.08);padding-top:24px;">
+                <p style="margin:0 0 14px 0;font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#8a8a86;">§ What you unlock</p>
+                <p style="margin:0 0 8px 0;font-family:Georgia,serif;font-size:14px;line-height:1.6;color:#1a2238;">
+                  <span style="color:#c89855;">¶</span>&nbsp;&nbsp;Thirty structured fields per lease, per-field confidence scored.
+                </p>
+                <p style="margin:0 0 8px 0;font-family:Georgia,serif;font-size:14px;line-height:1.6;color:#1a2238;">
+                  <span style="color:#c89855;">¶</span>&nbsp;&nbsp;Yardi, MRI Software, AppFolio Commercial — one-click export.
+                </p>
+                <p style="margin:0;font-family:Georgia,serif;font-size:14px;line-height:1.6;color:#1a2238;">
+                  <span style="color:#c89855;">¶</span>&nbsp;&nbsp;Your tenant terms never leave your tenancy.
+                </p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:32px 40px 40px 40px;">
+              <p style="margin:0;font-family:Georgia,serif;font-size:12px;line-height:1.6;color:#8a8a86;">
+                If you didn't request this, you can safely ignore the email.
+                Your address won't be added to anything until you click confirm.
+              </p>
+              <p style="margin:16px 0 0 0;font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:11px;color:#8a8a86;letter-spacing:0.04em;">
+                © LeaseBrief · Commercial lease abstraction
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

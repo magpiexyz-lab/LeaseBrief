@@ -120,6 +120,17 @@ export function trackCheckoutStarted(props: {
   track("checkout_started", { ...props, funnel_stage: "monetize" });
 }
 
+// Waitlist signup — used while self-serve checkout is disabled. Captures
+// purchase intent so we can email users when checkout goes live. Fires
+// `pro_waitlist_joined` (custom monetize-stage event).
+export function trackProWaitlistJoined(props: {
+  email: string;
+  source: "pricing" | "dashboard";
+  abstract_count_at_upgrade?: number;
+}) {
+  track("pro_waitlist_joined", { ...props, funnel_stage: "monetize" });
+}
+
 export function trackCheckoutCompleted(props: {
   plan: string;
   amount_usd: number;

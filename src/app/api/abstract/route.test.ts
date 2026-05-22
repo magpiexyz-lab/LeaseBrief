@@ -167,6 +167,13 @@ function setupClientMocks(options: {
         },
       };
     }
+    if (table === "users") {
+      // Bootstrap upsert path — make it a no-op for tests.
+      return {
+        upsert: (_payload: Record<string, unknown>) =>
+          Promise.resolve({ error: null }),
+      };
+    }
     throw new Error(`unexpected service-client table: ${table}`);
   });
 

@@ -133,11 +133,30 @@ export async function POST(request: Request) {
   // column when present and fall back to the plan default otherwise.
   // We check BEFORE parsing the multipart body so a spam loop hitting the
   // monthly cap can't burn the 50 MB upload budget either.
-  const { data: userRow } = await supabase
+  let { data: userRow } = await supabase
     .from("users")
     .select("plan, quota_monthly")
     .eq("id", user.id)
     .maybeSingle();
+  // Defensive bootstrap: if the auth-trigger migration hasn't run yet, the
+  // public.users row is missing and the abstract INSERT below would fail its
+  // user_id FK. Create the row via the service-role client (RLS denies the
+  // user client's INSERT here).
+  if (!userRow) {
+    const service = createServiceRoleClient();
+    await service
+      .from("users")
+      .upsert(
+        { id: user.id, email: user.email ?? "", plan: "free" },
+        { onConflict: "id" },
+      );
+    const refetch = await supabase
+      .from("users")
+      .select("plan, quota_monthly")
+      .eq("id", user.id)
+      .maybeSingle();
+    userRow = refetch.data;
+  }
   const plan: "free" | "pro" =
     (userRow as { plan?: string } | null)?.plan === "pro" ? "pro" : "free";
   const quota =
