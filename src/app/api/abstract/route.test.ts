@@ -61,12 +61,24 @@ let abstractInsertReturn: {
   data: { id: string; status: string } | null;
   error: { message: string } | null;
 } = { data: { id: "abs-uuid-1", status: "processing" }, error: null };
+// Quota-gate state (read by the new users + abstracts-count queries the route
+// runs before parsing the multipart body).
+let userRowReturn: {
+  data: { plan: "free" | "pro"; quota_monthly: number | null } | null;
+  error: { message: string } | null;
+} = { data: { plan: "free", quota_monthly: 3 }, error: null };
+let abstractsMonthlyCountReturn: {
+  count: number;
+  error: { message: string } | null;
+} = { count: 0, error: null };
 
 function setupClientMocks(options: {
   authedUserId?: string | null;
   fieldsInsertError?: { message: string } | null;
   updateError?: { message: string } | null;
   abstractInsertOverride?: typeof abstractInsertReturn;
+  userRowOverride?: typeof userRowReturn;
+  monthlyCountOverride?: typeof abstractsMonthlyCountReturn;
 } = {}) {
   const {
     authedUserId = "user-abc",
@@ -79,24 +91,52 @@ function setupClientMocks(options: {
   } else {
     abstractInsertReturn = { data: { id: "abs-uuid-1", status: "processing" }, error: null };
   }
+  if (options.userRowOverride) {
+    userRowReturn = options.userRowOverride;
+  } else {
+    userRowReturn = { data: { plan: "free", quota_monthly: 3 }, error: null };
+  }
+  if (options.monthlyCountOverride) {
+    abstractsMonthlyCountReturn = options.monthlyCountOverride;
+  } else {
+    abstractsMonthlyCountReturn = { count: 0, error: null };
+  }
 
   getUserMock.mockResolvedValue({
     data: { user: authedUserId ? { id: authedUserId } : null },
     error: null,
   });
 
-  // Server client (.from('abstracts').insert(...).select(...).single())
+  // Server client supports three call shapes:
+  //   .from('users').select(...).eq(...).maybeSingle() — quota lookup
+  //   .from('abstracts').select(..., {count:'exact',head:true}).eq(...).gte(...) — monthly count
+  //   .from('abstracts').insert(...).select(...).single() — initial INSERT
   serverFromMock.mockImplementation((table: string) => {
-    if (table !== "abstracts") {
-      throw new Error(`unexpected server-client table read: ${table}`);
-    }
-    return {
-      insert: () => ({
+    if (table === "users") {
+      return {
         select: () => ({
-          single: () => Promise.resolve(abstractInsertReturn),
+          eq: () => ({
+            maybeSingle: () => Promise.resolve(userRowReturn),
+          }),
         }),
-      }),
-    };
+      };
+    }
+    if (table === "abstracts") {
+      return {
+        // Count query: select('id', {count:'exact', head:true}).eq().gte()
+        select: () => ({
+          eq: () => ({
+            gte: () => Promise.resolve(abstractsMonthlyCountReturn),
+          }),
+        }),
+        insert: () => ({
+          select: () => ({
+            single: () => Promise.resolve(abstractInsertReturn),
+          }),
+        }),
+      };
+    }
+    throw new Error(`unexpected server-client table read: ${table}`);
   });
 
   createServerSupabaseClientMock.mockResolvedValue({
@@ -171,6 +211,64 @@ describe("POST /api/abstract — auth", () => {
     const { POST } = await loadRoute();
     const res = await POST(pdfRequest());
     expect([401, 403]).toContain(res.status);
+  });
+});
+
+describe("POST /api/abstract — monthly quota gate", () => {
+  it("returns 402 when a free-tier user has already used 3 abstracts this month", async () => {
+    setupClientMocks({
+      userRowOverride: { data: { plan: "free", quota_monthly: 3 }, error: null },
+      monthlyCountOverride: { count: 3, error: null },
+    });
+    const { POST } = await loadRoute();
+    const res = await POST(pdfRequest());
+    expect(res.status).toBe(402);
+    const body = (await res.json()) as {
+      error: string;
+      current_count: number;
+      quota: number;
+      plan: string;
+    };
+    expect(body.error).toBe("Monthly quota reached");
+    expect(body.current_count).toBe(3);
+    expect(body.quota).toBe(3);
+    expect(body.plan).toBe("free");
+  });
+
+  it("returns 402 when a pro-tier user has already used 50 abstracts this month", async () => {
+    setupClientMocks({
+      userRowOverride: { data: { plan: "pro", quota_monthly: 50 }, error: null },
+      monthlyCountOverride: { count: 50, error: null },
+    });
+    const { POST } = await loadRoute();
+    const res = await POST(pdfRequest());
+    expect(res.status).toBe(402);
+    const body = (await res.json()) as { plan: string; quota: number };
+    expect(body.plan).toBe("pro");
+    expect(body.quota).toBe(50);
+  });
+
+  it("falls back to 3-abstract free tier when no users row exists yet", async () => {
+    setupClientMocks({
+      userRowOverride: { data: null, error: null },
+      monthlyCountOverride: { count: 3, error: null },
+    });
+    const { POST } = await loadRoute();
+    const res = await POST(pdfRequest());
+    expect(res.status).toBe(402);
+    const body = (await res.json()) as { quota: number; plan: string };
+    expect(body.quota).toBe(3);
+    expect(body.plan).toBe("free");
+  });
+
+  it("allows the upload when the user is still under quota", async () => {
+    setupClientMocks({
+      userRowOverride: { data: { plan: "free", quota_monthly: 3 }, error: null },
+      monthlyCountOverride: { count: 2, error: null },
+    });
+    const { POST } = await loadRoute();
+    const res = await POST(pdfRequest());
+    expect(res.status).toBe(201);
   });
 });
 
