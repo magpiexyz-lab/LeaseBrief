@@ -131,7 +131,7 @@ export default async function DashboardPage() {
                   plan === "pro" ? "text-[var(--brass)]" : "text-foreground",
                 ].join(" ")}
               >
-                {plan === "pro" ? "Pro · $399" : "Free trial"}
+                {plan === "pro" ? "Pro · $99" : "Free trial"}
               </span>
             </div>
             <span className="h-8 w-px bg-[oklch(0.22_0.04_250_/_0.10)]" />

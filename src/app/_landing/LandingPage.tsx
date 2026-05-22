@@ -618,7 +618,7 @@ function ProofStrip() {
               detail="rent, term, options, NNN/CAM"
             />
             <MetricTile
-              value={399}
+              value={99}
               prefix="$"
               caption="Flat monthly"
               detail="50 abstracts included · $5 overage"
@@ -1185,7 +1185,7 @@ function ConfidenceChip({ conf }: { conf: number }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Pricing anchor — single $399 plan card with brass border + outsource compare.
+// Pricing anchor — single $99 plan card with brass border + outsource compare.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function PricingAnchor({
@@ -1223,7 +1223,7 @@ function PricingAnchor({
                 className="italic"
                 style={{ color: "var(--brass)" }}
               >
-                $399
+                $99
               </span>{" "}
               line item replaces your outsource bill.
             </h2>
@@ -1253,7 +1253,7 @@ function PricingAnchor({
               <CompareRow
                 left="LeaseBrief"
                 leftSub="Per-field AI + in-house review"
-                right="$399"
+                right="$99"
                 rightSub="flat / 50 abstracts"
                 highlight
               />
@@ -1287,7 +1287,7 @@ function PricingAnchor({
                 className="text-[72px] leading-none font-semibold tracking-[-0.03em] text-[var(--ink)] md:text-[88px]"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                $399
+                $99
               </span>
               <span className="text-[16px] font-medium text-[var(--whisper)]">/ month</span>
             </div>
@@ -1418,7 +1418,7 @@ function Faq() {
     },
     {
       q: "What's actually on the free tier?",
-      a: "You get your first lease abstract free with no card on file. After that, the Pro plan is $399/month, 50 abstracts included, $5 per abstract after. Cancel any month — you keep every abstract you exported.",
+      a: "You get your first lease abstract free with no card on file. After that, the Pro plan is $99/month, 50 abstracts included, $5 per abstract after. Cancel any month — you keep every abstract you exported.",
     },
   ];
 

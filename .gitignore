@@ -64,3 +64,4 @@ coverage/
 pnpm-lock.yaml
 yarn.lock
 .claude/settings.local.json
+.vercel

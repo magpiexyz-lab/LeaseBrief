@@ -28,18 +28,18 @@ export const VARIANTS: ReadonlyArray<Variant> = [
       "Datapoint and Lease Probe take 24-72 hours to turn around a single abstract",
       "Half a workday spent on one lease is half a workday not spent closing the next deal",
     ],
-    pricingAmount: 399,
+    pricingAmount: 99,
     pricingModel: "subscription",
   },
   {
     slug: "cost",
     headline: "Stop Paying $300 Per Lease to Outsourcers",
     subheadline:
-      "Run unlimited commercial lease abstracts through your own AI for $399/month flat. 50 abstracts included, $5 each after, no per-document surprises.",
-    cta: "Start Your $399 Trial",
-    promise: "Replace your Datapoint or Lease Probe bill with one $399 line item.",
+      "Run unlimited commercial lease abstracts through your own AI for $99/month flat. 50 abstracts included, $5 each after, no per-document surprises.",
+    cta: "Start Your $99 Trial",
+    promise: "Replace your Datapoint or Lease Probe bill with one $99 line item.",
     proof:
-      "$399/mo equals roughly 1.3 outsourced abstracts. The average mid-market broker runs 15-30 abstracts a month.",
+      "$99/mo is less than a single outsourced abstract. The average mid-market broker runs 15-30 abstracts a month.",
     urgency:
       "Every outsourced abstract this month is margin you're handing to someone else.",
     painPoints: [
@@ -47,7 +47,7 @@ export const VARIANTS: ReadonlyArray<Variant> = [
       "Enterprise lease platforms (Visual Lease, MRI Contract Intelligence, Leasecake) start at $5k+/month",
       "Mid-market brokerages are stuck overpaying outsourcers or under-tooled on enterprise software",
     ],
-    pricingAmount: 399,
+    pricingAmount: 99,
     pricingModel: "subscription",
   },
   {
@@ -67,7 +67,7 @@ export const VARIANTS: ReadonlyArray<Variant> = [
       "You have no visibility into who at Datapoint or Lease Probe is reading your sensitive option-to-extend, NNN, and rent escalation clauses",
       "Confidential rent roll data and tenant terms should never sit unattended on a stranger's screen",
     ],
-    pricingAmount: 399,
+    pricingAmount: 99,
     pricingModel: "subscription",
   },
 ];

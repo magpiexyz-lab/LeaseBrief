@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "LeaseBrief — Lease abstracts in 90 seconds",
     description:
-      "AI-powered commercial lease abstraction for mid-market CRE brokers. 30 fields, confidence scored, $399/month.",
+      "AI-powered commercial lease abstraction for mid-market CRE brokers. 30 fields, confidence scored, $99/month.",
     type: "website",
     siteName: "LeaseBrief",
   },
@@ -59,11 +59,11 @@ const jsonLd = {
     "AI tool that turns commercial real estate lease PDFs into structured 30-field abstracts in 90 seconds.",
   offers: {
     "@type": "Offer",
-    price: "399",
+    price: "99",
     priceCurrency: "USD",
     priceSpecification: {
       "@type": "UnitPriceSpecification",
-      price: "399",
+      price: "99",
       priceCurrency: "USD",
       unitText: "month",
     },

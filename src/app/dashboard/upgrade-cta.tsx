@@ -1,51 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { trackCheckoutStarted } from "@/lib/events";
 import { Button } from "@/components/ui/button";
 
 export function UpgradeCta({
-  abstractCount,
-  variant: variantSlug,
+  abstractCount: _abstractCount,
+  variant: _variantSlug,
 }: {
   abstractCount: number;
   variant?: string;
 }) {
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState("");
-  const router = useRouter();
-
-  function handleUpgrade() {
-    setError("");
-    trackCheckoutStarted({
-      abstract_count_at_upgrade: abstractCount,
-      ...(variantSlug ? { variant: variantSlug } : {}),
-    });
-
-    startTransition(async () => {
-      try {
-        const res = await fetch("/api/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ plan: "pro" }),
-        });
-        if (res.ok) {
-          const payload = (await res.json().catch(() => null)) as { url?: string } | null;
-          if (payload?.url) {
-            window.location.assign(payload.url);
-            return;
-          }
-        }
-        // Fallback when /api/checkout is a stub — keep the funnel moving by routing to /checkout.
-        router.push("/checkout");
-      } catch {
-        setError("Could not reach checkout. Try again or use the pricing page.");
-      }
-    });
-  }
-
   return (
     <section
       aria-labelledby="dashboard-upgrade-heading"
@@ -76,7 +40,7 @@ export function UpgradeCta({
         >
           Replace your{" "}
           <span className="italic text-[var(--brass)]">$200–500 / lease</span> outsourcer bill with
-          one $399 line item.
+          one $99 line item.
         </h3>
         <p className="max-w-2xl text-[15px] leading-[1.55] text-muted-foreground">
           Unlock unlimited extraction speed, the full review queue, and exports to Yardi, MRI, and
@@ -86,18 +50,17 @@ export function UpgradeCta({
 
         <div className="mt-1 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <PricePill label="Plan" value="Pro" mono={false} accent />
-          <PricePill label="Monthly" value="$399" />
+          <PricePill label="Monthly" value="$99" />
           <PricePill label="Overage / lease" value="$5" />
         </div>
 
         <div className="mt-2 flex flex-wrap items-center gap-3">
           <Button
             type="button"
-            onClick={handleUpgrade}
-            disabled={isPending}
-            className="h-11 rounded-full bg-[var(--brass)] px-6 text-[14px] font-medium text-[var(--ink)] shadow-[var(--shadow-medium)] transition-all hover:bg-[var(--brass)]/90 hover:shadow-[var(--shadow-heavy)]"
+            disabled
+            className="h-11 rounded-full bg-[var(--brass)] px-6 text-[14px] font-medium text-[var(--ink)] shadow-[var(--shadow-medium)] disabled:opacity-70"
           >
-            {isPending ? "Opening secure checkout..." : "Upgrade to Pro"}
+            Coming soon
           </Button>
           <Link
             href="/pricing"
@@ -108,15 +71,9 @@ export function UpgradeCta({
         </div>
 
         <p className="text-[12px] text-muted-foreground">
-          Reference: outsourced abstracts run $200–$500 each. Pro pays for itself at 1.3 abstracts /
-          month.
+          Reference: outsourced abstracts run $200–$500 each. One Pro month is cheaper than one
+          outsourced abstract.
         </p>
-
-        {error && (
-          <p role="alert" className="text-[12px] text-destructive">
-            {error}
-          </p>
-        )}
       </div>
     </section>
   );

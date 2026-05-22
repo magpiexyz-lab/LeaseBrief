@@ -450,7 +450,7 @@ export function AbstractDetailView({
           <div className="relative flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
             <div className="max-w-2xl space-y-3">
               <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--whisper)]">
-                The Trade · $399 / mo
+                The Trade · $99 / mo
               </span>
               <h2 className="font-display text-[28px] font-medium leading-[1.1] tracking-[-0.02em] md:text-[32px]">
                 Run 50 abstracts every month. $5 each after.
@@ -458,7 +458,7 @@ export function AbstractDetailView({
               <p className="text-[15px] text-[var(--ink)]/72">
                 Outsourced abstracts run{" "}
                 <span className="font-mono text-[var(--ink)]">$200–500</span>{" "}
-                per document. Replace that line item with one $399 / mo
+                per document. Replace that line item with one $99 / mo
                 subscription and unlock unlimited exports across Yardi, MRI,
                 and AppFolio Commercial.
               </p>

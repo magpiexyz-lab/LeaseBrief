@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,47 +17,20 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { createClient } from "@/lib/supabase";
 import { trackLandingView } from "@/lib/events";
 
 /**
  * Anchor figures — used in copy below.
  * Source: experiment.yaml h-04 / b-07 / variant `cost`.
  */
-const PRO_MONTHLY_PRICE_USD = 399;
+const PRO_MONTHLY_PRICE_USD = 99;
 const PRO_INCLUDED_ABSTRACTS = 50;
 const PRO_OVERAGE_PRICE_USD = 5;
 const OUTSOURCED_PRICE_MIN_USD = 200;
 const OUTSOURCED_PRICE_MAX_USD = 500;
 const OUTSOURCED_PRICE_MID_USD = 300; // midpoint for break-even math
 
-/**
- * Read the signed-in user's count of completed abstracts.
- * Falls back to 0 when no user is signed in or RLS denies the read.
- * This value is sent with the `checkout_started` event per experiment/EVENTS.yaml.
- */
-async function fetchAbstractCountAtUpgrade(): Promise<number> {
-  const supabase = createClient();
-  const { data: userResult } = await supabase.auth.getUser();
-  const userId = userResult?.user?.id;
-  if (!userId) return 0;
-  // demo / placeholder mode: counts come back as the seed data length.
-  // production: only the signed-in user's approved rows count toward upgrade.
-  const result = await supabase
-    .from("abstracts")
-    .select("id, status, user_id");
-  const rows = (result as { data?: Array<{ status?: string; user_id?: string }> })
-    .data;
-  if (!Array.isArray(rows)) return 0;
-  return rows.filter(
-    (row) => row.status === "approved" && row.user_id === userId,
-  ).length;
-}
-
 export function PricingClient() {
-  const router = useRouter();
-  const [isRedirecting, setIsRedirecting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const trackedRef = useRef(false);
 
   // Page mount: fire landing_view so the pricing page registers as a funnel
@@ -68,25 +40,6 @@ export function PricingClient() {
     trackedRef.current = true;
     trackLandingView({ variant: "pricing", referrer: document.referrer });
   }, []);
-
-  async function handleUpgrade() {
-    setError(null);
-    setIsRedirecting(true);
-    try {
-      const count = await fetchAbstractCountAtUpgrade();
-      // Hand the page off to /checkout, which initiates the Stripe session
-      // and fires `checkout_started` with abstract_count_at_upgrade.
-      router.push(
-        `/checkout?plan=pro&abstract_count=${encodeURIComponent(String(count))}`,
-      );
-    } catch (err) {
-      console.error("[pricing] upgrade redirect failed", err);
-      setError(
-        "We couldn't start checkout. Please try again — if it persists, refresh the page.",
-      );
-      setIsRedirecting(false);
-    }
-  }
 
   return (
     <div className="relative isolate min-h-screen bg-background">
@@ -251,34 +204,17 @@ export function PricingClient() {
               {/* Primary CTA — brass-prominent pill */}
               <div className="mt-9 flex flex-col gap-3">
                 <Button
-                  onClick={handleUpgrade}
-                  disabled={isRedirecting}
+                  disabled
                   size="lg"
-                  className="group h-14 rounded-pill bg-accent px-7 font-body text-base font-medium text-accent-foreground shadow-[0_0_0_1px_rgba(26,34,56,0.06),0_4px_8px_rgba(200,152,85,0.18),0_8px_16px_rgba(26,34,56,0.08)] transition-all duration-180 hover:shadow-[0_0_0_1px_rgba(26,34,56,0.08),0_8px_24px_rgba(200,152,85,0.32),0_16px_36px_rgba(26,34,56,0.10)] hover:-translate-y-0.5 disabled:opacity-70"
+                  className="group h-14 rounded-pill bg-accent px-7 font-body text-base font-medium text-accent-foreground shadow-[0_0_0_1px_rgba(26,34,56,0.06),0_4px_8px_rgba(200,152,85,0.18),0_8px_16px_rgba(26,34,56,0.08)] disabled:opacity-70"
                 >
-                  {isRedirecting ? (
-                    <span className="inline-flex items-center gap-2.5">
-                      <Spinner />
-                      Opening secure checkout…
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-2">
-                      Upgrade to Pro
-                      <ArrowRight className="transition-transform duration-200 group-hover:translate-x-0.5" />
-                    </span>
-                  )}
+                  <span className="inline-flex items-center gap-2">
+                    Coming soon
+                  </span>
                 </Button>
-                {error && (
-                  <p
-                    role="alert"
-                    className="font-body text-sm text-destructive"
-                  >
-                    {error}
-                  </p>
-                )}
                 <p className="font-body text-xs text-foreground/55">
-                  Secure checkout via Stripe. Cancel anytime from your
-                  dashboard.
+                  Self-serve checkout opens soon. We&apos;ll email everyone on
+                  the waitlist the moment it&apos;s live.
                 </p>
               </div>
             </CardContent>
@@ -460,28 +396,19 @@ export function PricingClient() {
                   <span className="italic">Start running them yourself.</span>
                 </h2>
                 <p className="mt-5 max-w-xl font-body text-base leading-relaxed text-foreground/70">
-                  One $399 line item replaces a stack of $300 invoices.
+                  One ${PRO_MONTHLY_PRICE_USD} line item replaces a stack of $300 invoices.
                   Cancel after a month if it doesn&apos;t.
                 </p>
               </div>
               <div className="flex flex-col items-start gap-3 md:items-end">
                 <Button
-                  onClick={handleUpgrade}
-                  disabled={isRedirecting}
+                  disabled
                   size="lg"
-                  className="group h-14 rounded-pill bg-accent px-8 font-body text-base font-medium text-accent-foreground shadow-[0_0_0_1px_rgba(26,34,56,0.06),0_4px_8px_rgba(200,152,85,0.18),0_8px_16px_rgba(26,34,56,0.08)] transition-all duration-180 hover:-translate-y-0.5 hover:shadow-[0_0_0_1px_rgba(26,34,56,0.08),0_8px_24px_rgba(200,152,85,0.32),0_16px_36px_rgba(26,34,56,0.10)] disabled:opacity-70"
+                  className="group h-14 rounded-pill bg-accent px-8 font-body text-base font-medium text-accent-foreground shadow-[0_0_0_1px_rgba(26,34,56,0.06),0_4px_8px_rgba(200,152,85,0.18),0_8px_16px_rgba(26,34,56,0.08)] disabled:opacity-70"
                 >
-                  {isRedirecting ? (
-                    <span className="inline-flex items-center gap-2.5">
-                      <Spinner />
-                      Opening secure checkout…
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-2">
-                      Upgrade to Pro — ${PRO_MONTHLY_PRICE_USD}/mo
-                      <ArrowRight className="transition-transform duration-200 group-hover:translate-x-0.5" />
-                    </span>
-                  )}
+                  <span className="inline-flex items-center gap-2">
+                    Coming soon — ${PRO_MONTHLY_PRICE_USD}/mo
+                  </span>
                 </Button>
                 <Link
                   href="/dashboard"
@@ -532,37 +459,6 @@ function BrassCheck({ className = "" }: { className?: string }) {
         strokeLinejoin="round"
       />
     </svg>
-  );
-}
-
-function ArrowRight({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 18 18"
-      fill="none"
-      aria-hidden
-      className={className}
-    >
-      <path
-        d="M3.5 9h11M10 4.5L14.5 9 10 13.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function Spinner() {
-  return (
-    <span
-      className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent"
-      role="status"
-      aria-label="Loading"
-    />
   );
 }
 
