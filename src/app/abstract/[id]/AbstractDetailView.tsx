@@ -31,6 +31,10 @@ import {
   trackAbstractView,
   trackCheckoutStarted,
 } from "@/lib/events";
+import {
+  FeedbackWidget,
+  shouldShowFeedbackWidget,
+} from "@/components/feedback-widget";
 import type { AbstractRow } from "@/lib/types";
 import {
   CONFIDENCE_THRESHOLD,
@@ -100,6 +104,7 @@ export function AbstractDetailView({
   const [exportOpen, setExportOpen] = useState(false);
   const [lastExport, setLastExport] = useState<ExportFormat | null>(null);
   const [showHero, setShowHero] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   // abstract_view fires once on mount with extraction_duration_ms — b-05.
   useEffect(() => {
@@ -132,6 +137,12 @@ export function AbstractDetailView({
       extraction_duration_ms: abstract.extraction_duration_ms ?? undefined,
     });
     setApprovalState("approved");
+    // Post-activation feedback prompt — shown once per user (localStorage
+    // gated). Briefly delayed so the approval confirmation animation lands
+    // before the dialog appears.
+    if (shouldShowFeedbackWidget()) {
+      window.setTimeout(() => setFeedbackOpen(true), 1400);
+    }
   }
 
   function handleExport(format: ExportFormat) {
@@ -531,6 +542,12 @@ export function AbstractDetailView({
           </div>
         </footer>
       </div>
+
+      <FeedbackWidget
+        activationAction="abstract_completed"
+        open={feedbackOpen}
+        onOpenChange={setFeedbackOpen}
+      />
     </main>
   );
 }

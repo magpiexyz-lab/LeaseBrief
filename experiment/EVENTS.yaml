@@ -42,6 +42,18 @@ events:
         type: string
         required: false
         description: UTM campaign identifier
+      utm_content:
+        type: string
+        required: false
+        description: UTM content — typically the variant slug or sitelink id for per-creative attribution
+      gclid:
+        type: string
+        required: false
+        description: Google Click Identifier (for Google Ads conversion attribution)
+      click_id:
+        type: string
+        required: false
+        description: Generic click ID from the originating ad platform (mirrors gclid for google-ads)
       referrer:
         type: string
         required: false
@@ -190,6 +202,23 @@ events:
         type: number
         required: false
         description: End-to-end time from upload to approval
+
+  feedback_submitted:
+    funnel_stage: activate
+    trigger: User submits the post-activation feedback widget
+    properties:
+      source:
+        type: string
+        required: false
+        description: "How the user found LeaseBrief (google | social | friend | other)"
+      feedback:
+        type: string
+        required: false
+        description: Free-text feedback from the user
+      activation_action:
+        type: string
+        required: true
+        description: Activation step that preceded this submission (abstract_completed)
 
   # ─── MONETIZE ──────────────────────────────────────────────────────────────
   checkout_started:
