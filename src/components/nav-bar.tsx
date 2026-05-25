@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu } from "lucide-react";
 import { createClient } from "@/lib/supabase";
+import { BrandLockup } from "@/components/brand-mark";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Sheet,
@@ -128,18 +129,12 @@ export function NavBar() {
       aria-label="Primary"
       className="sticky top-0 z-50 flex items-center justify-between border-b border-foreground/8 px-6 py-3 backdrop-blur-md bg-background/90"
     >
-      <Link href="/" className="flex items-center gap-2">
-        {/* Brand wordmark — no logo asset exists; an inline mark keeps the
-            nav legible without a missing-image warning. */}
-        <span
-          aria-hidden
-          className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-[var(--brass)] font-display text-[15px] font-semibold text-[var(--ink)]"
-        >
-          §
-        </span>
-        <span className="text-lg font-display font-semibold tracking-tight">
-          LeaseBrief
-        </span>
+      <Link
+        href="/"
+        className="flex items-center"
+        aria-label="LeaseBrief home"
+      >
+        <BrandLockup monogramSize={24} wordmarkSize={18} />
       </Link>
 
       {/* Desktop nav */}

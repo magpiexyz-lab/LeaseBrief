@@ -15,6 +15,7 @@ import {
   classifyChannel,
 } from "@/lib/analytics-attribution";
 import type { Variant } from "@/lib/variants";
+import { Monogram } from "@/components/brand-mark";
 import { Reveal } from "./Reveal";
 import { NumberTicker } from "./NumberTicker";
 
@@ -86,33 +87,8 @@ export function LandingPage({ variant }: { variant: Variant }) {
 // LB monogram — letterform mark in Fraunces with brass underline.
 // ─────────────────────────────────────────────────────────────────────────────
 
-function Monogram({ size = 28 }: { size?: number }) {
-  return (
-    <span
-      aria-label="LeaseBrief"
-      className="inline-flex items-end leading-none"
-      style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: size }}
-    >
-      <span
-        className="relative text-[var(--ink)]"
-        style={{ letterSpacing: "-0.04em" }}
-      >
-        L
-        <span
-          aria-hidden
-          className="absolute -bottom-1 left-0 h-[2px] w-[120%]"
-          style={{ background: "var(--brass)" }}
-        />
-      </span>
-      <span
-        className="ml-[-0.05em] text-[var(--ink)]"
-        style={{ fontSize: size * 1.08, letterSpacing: "-0.06em" }}
-      >
-        B
-      </span>
-    </span>
-  );
-}
+// Monogram is imported from @/components/brand-mark at the top of the file
+// so the landing page and the NavBar render the same lockup.
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Top nav — minimal, document letterhead feel.

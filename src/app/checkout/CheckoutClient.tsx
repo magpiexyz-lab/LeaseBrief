@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { BrandLockup } from "@/components/brand-mark";
 import { trackCheckoutStarted } from "@/lib/events";
 
 type Status = "preparing" | "creating" | "redirecting" | "error" | "missing";
@@ -147,12 +148,10 @@ export function CheckoutClient() {
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 pt-8 pb-4 md:px-8">
         <Link
           href="/"
-          className="font-display text-xl font-semibold tracking-tight text-foreground"
+          className="inline-flex"
           aria-label="LeaseBrief home"
         >
-          <span>L</span>
-          <span>B</span>
-          <span className="ml-1 inline-block h-[1.5px] w-6 align-middle bg-accent" />
+          <BrandLockup monogramSize={24} wordmarkSize={18} />
         </Link>
         <nav className="hidden items-center gap-7 text-sm text-foreground/70 md:flex">
           <Link

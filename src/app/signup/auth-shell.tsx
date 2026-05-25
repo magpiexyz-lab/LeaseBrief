@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { BrandLockup } from "@/components/brand-mark";
 
 /**
  * AuthShell — editorial split-pane shared by /signup and /login.
@@ -125,20 +126,10 @@ function BrandMark() {
   return (
     <Link
       href="/"
-      className="group/brand inline-flex items-center gap-3 self-start"
+      className="inline-flex self-start"
       aria-label="LeaseBrief home"
     >
-      <span className="relative inline-flex items-end font-display tracking-[-0.04em] text-[var(--ink)]">
-        <span className="text-[34px] leading-none font-semibold">L</span>
-        <span className="-ml-1 text-[42px] leading-none font-semibold">B</span>
-        <span
-          aria-hidden
-          className="absolute -bottom-1 left-0.5 h-[2px] w-[1.9em] origin-left bg-[var(--brass)] transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/brand:scale-x-[1.06]"
-        />
-      </span>
-      <span className="hidden font-display text-[20px] font-medium tracking-tight text-[var(--ink)] sm:inline">
-        LeaseBrief
-      </span>
+      <BrandLockup monogramSize={32} wordmarkSize={20} />
     </Link>
   );
 }
