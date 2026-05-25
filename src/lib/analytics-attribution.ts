@@ -12,6 +12,9 @@ export interface AttributionProps {
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
+  utm_content?: string;
+  gclid?: string;
+  click_id?: string;
   referrer?: string;
 }
 
@@ -81,11 +84,28 @@ export function classifyChannel(props: AttributionProps): QualifiedChannel | nul
 export function buildAttributionProps(): AttributionProps {
   if (typeof window === "undefined") return {};
 
+  // Read from sessionStorage first (captured by the beforeInteractive script
+  // in src/app/layout.tsx — survives Next.js router.replaceState() stripping
+  // the query string). Fall back to the live URL params on first load.
   const params = new URLSearchParams(window.location.search);
+  const sess = (key: string): string | undefined => {
+    try {
+      return sessionStorage.getItem(`__ph_${key}`) ?? undefined;
+    } catch {
+      return undefined;
+    }
+  };
+  const gclid = params.get("gclid") ?? sess("gclid") ?? undefined;
   return {
-    utm_source: params.get("utm_source") ?? undefined,
-    utm_medium: params.get("utm_medium") ?? undefined,
-    utm_campaign: params.get("utm_campaign") ?? undefined,
+    utm_source: params.get("utm_source") ?? sess("utm_source") ?? undefined,
+    utm_medium: params.get("utm_medium") ?? sess("utm_medium") ?? undefined,
+    utm_campaign: params.get("utm_campaign") ?? sess("utm_campaign") ?? undefined,
+    utm_content: params.get("utm_content") ?? sess("utm_content") ?? undefined,
+    gclid,
+    // Mirror gclid into the generic click_id property for cross-channel
+    // dashboards. When we add meta/twitter ads, click_id will hold their
+    // respective IDs (fbclid / twclid) and gclid stays Google-specific.
+    click_id: gclid,
     referrer: document.referrer || undefined,
   };
 }

@@ -34,6 +34,9 @@ export function LandingPage({ variant }: { variant: Variant }) {
       utm_source: attribution.utm_source,
       utm_medium: attribution.utm_medium,
       utm_campaign: attribution.utm_campaign,
+      utm_content: attribution.utm_content,
+      gclid: attribution.gclid,
+      click_id: attribution.click_id,
       referrer: attribution.referrer,
     });
     const channel = classifyChannel(attribution);

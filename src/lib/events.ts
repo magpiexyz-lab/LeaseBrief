@@ -29,9 +29,20 @@ export function trackLandingView(props?: {
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
+  utm_content?: string;
+  gclid?: string;
+  click_id?: string;
   referrer?: string;
 }) {
   track("landing_view", { ...props, funnel_stage: "reach" });
+}
+
+export function trackFeedbackSubmitted(props: {
+  activation_action: string;
+  source?: string;
+  feedback?: string;
+}) {
+  track("feedback_submitted", { ...props, funnel_stage: "activate" });
 }
 
 export function trackQualifiedPaidVisit(props: {
