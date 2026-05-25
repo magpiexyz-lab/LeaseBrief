@@ -15,7 +15,7 @@ import {
   classifyChannel,
 } from "@/lib/analytics-attribution";
 import type { Variant } from "@/lib/variants";
-import { Monogram } from "@/components/brand-mark";
+import { BrandLockup, Monogram } from "@/components/brand-mark";
 import { Reveal } from "./Reveal";
 import { NumberTicker } from "./NumberTicker";
 
@@ -104,14 +104,12 @@ function TopNav({
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md bg-[var(--parchment)]/85 border-b border-[rgba(26,34,56,0.06)]">
       <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4 md:px-8 md:py-5">
-        <Link href="/" className="group inline-flex items-center gap-3">
-          <Monogram size={28} />
-          <span
-            className="hidden text-[13px] font-medium tracking-[0.18em] text-[var(--whisper)] uppercase sm:inline-block"
-            style={{ fontFamily: "var(--font-body)" }}
-          >
-            LeaseBrief
-          </span>
+        <Link
+          href="/"
+          className="inline-flex"
+          aria-label="LeaseBrief home"
+        >
+          <BrandLockup monogramSize={24} wordmarkSize={18} />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
