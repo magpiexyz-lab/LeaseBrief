@@ -566,43 +566,10 @@ function AbstractFloatCard() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function ProofStrip() {
-  // Editorial wordmark proxies for industry associations (text marks, not
-  // licensed logos — read as legitimacy without misrepresentation).
-  const trusted = ["CCIM", "SIOR", "NAI Global", "Lee & Associates", "Cushman & Wakefield"];
-
   return (
     <section className="relative">
       <div className="mx-auto max-w-[1200px] px-6 py-16 md:px-8 md:py-20">
-        <Reveal>
-          <div className="flex items-center justify-center gap-3">
-            <span
-              aria-hidden
-              className="h-px w-10"
-              style={{ background: "rgba(26,34,56,0.18)" }}
-            />
-            <span className="eyebrow">Trusted by brokers at</span>
-            <span
-              aria-hidden
-              className="h-px w-10"
-              style={{ background: "rgba(26,34,56,0.18)" }}
-            />
-          </div>
-        </Reveal>
-        <Reveal delay={120} className="mt-6">
-          <ul className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-            {trusted.map((t) => (
-              <li
-                key={t}
-                className="text-[15px] font-medium tracking-[0.04em] text-[var(--ink)]/45 transition-colors duration-200 hover:text-[var(--ink)]/80 md:text-[16px]"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                {t}
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-
-        <Reveal delay={200} className="mt-14">
+        <Reveal delay={200}>
           <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[14px] sm:grid-cols-3"
             style={{ background: "rgba(26,34,56,0.08)", boxShadow: "var(--shadow-light)" }}
           >
@@ -834,8 +801,8 @@ function PainLedger({ variant }: { variant: Variant }) {
               className="max-w-[360px] text-[15px] leading-[1.6]"
               style={{ color: "rgba(247,244,236,0.62)", fontFamily: "var(--font-body)" }}
             >
-              From real mid-market brokerage workflows — what we keep hearing in
-              CCIM Slack threads and Cushman team meetings.
+              From real mid-market brokerage workflows — what we keep hearing
+              from brokers losing afternoons to lease abstraction.
             </p>
           </div>
         </Reveal>

@@ -20,12 +20,11 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const [oauthLoading, setOauthLoading] = useState<null | "google">(null);
   const router = useRouter();
 
-  // Fire signup_start once on page mount, declaring both methods are visible.
+  // Fire signup_start once on page mount.
   useEffect(() => {
-    trackSignupStart({ auth_method: "both" });
+    trackSignupStart({ auth_method: "email" });
   }, []);
 
   async function handleSignup(e: React.SyntheticEvent<HTMLFormElement>) {
@@ -65,24 +64,6 @@ export default function SignupPage() {
     router.push("/dashboard");
   }
 
-  async function handleGoogleSignup() {
-    setOauthLoading("google");
-    setError("");
-    trackSignupStart({ auth_method: "google" });
-    const supabase = createClient();
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
-      },
-    });
-    if (oauthError) {
-      setOauthLoading(null);
-      setError(oauthError.message);
-    }
-    // On success, the browser is redirected — no further state needed.
-  }
-
   return (
     <AuthShell
       eyebrow="§ NEW ACCOUNT"
@@ -93,7 +74,7 @@ export default function SignupPage() {
           <span className="text-[var(--brass)] italic">ninety seconds</span>.
         </>
       }
-      lede="A single sign-in opens the same drag-and-drop console your peers at CCIM, SIOR, and Lee &amp; Associates use to retire their outsourced abstract bill."
+      lede="A single sign-in opens the drag-and-drop console — retire your outsourced abstract bill and run 30-field lease abstracts yourself."
       proofPoints={[
         "Thirty structured fields per lease, per-field confidence scored.",
         "Yardi, MRI Software, and AppFolio Commercial — one-click export.",
@@ -160,7 +141,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                disabled={loading || oauthLoading !== null}
+                disabled={loading}
                 className="h-12 rounded-[10px] border-[var(--ash)] bg-[var(--vellum)] px-4 !text-base text-[var(--ink)] shadow-[inset_0_1px_2px_rgba(26,34,56,0.03)] placeholder:text-[var(--whisper)]/70 focus-visible:border-[var(--brass)] focus-visible:ring-2 focus-visible:ring-[var(--brass)]/40 md:!text-base"
               />
             </div>
@@ -185,7 +166,7 @@ export default function SignupPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  disabled={loading || oauthLoading !== null}
+                  disabled={loading}
                   className="h-12 rounded-[10px] border-[var(--ash)] bg-[var(--vellum)] px-4 pr-14 !text-base text-[var(--ink)] shadow-[inset_0_1px_2px_rgba(26,34,56,0.03)] placeholder:text-[var(--whisper)]/70 focus-visible:border-[var(--brass)] focus-visible:ring-2 focus-visible:ring-[var(--brass)]/40 md:!text-base"
                 />
                 <button
@@ -217,7 +198,7 @@ export default function SignupPage() {
 
             <Button
               type="submit"
-              disabled={loading || oauthLoading !== null}
+              disabled={loading}
               className="group/cta relative h-12 w-full overflow-hidden rounded-[9999px] bg-[var(--brass)] px-6 !text-base font-medium text-[var(--ink)] shadow-[0_1px_2px_rgba(200,152,85,0.18),0_4px_12px_rgba(200,152,85,0.20),inset_0_1px_0_rgba(255,255,255,0.22)] transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-px hover:shadow-[0_2px_4px_rgba(200,152,85,0.24),0_8px_20px_rgba(200,152,85,0.28),inset_0_1px_0_rgba(255,255,255,0.30)] focus-visible:ring-2 focus-visible:ring-[var(--brass)]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)] disabled:opacity-70"
             >
               {loading ? (
@@ -251,34 +232,6 @@ export default function SignupPage() {
 }
 
 /* --------------------------------- helpers -------------------------------- */
-
-function GoogleGlyph() {
-  return (
-    <svg
-      aria-hidden
-      viewBox="0 0 24 24"
-      className="h-5 w-5 shrink-0"
-      focusable="false"
-    >
-      <path
-        fill="#EA4335"
-        d="M12 10.2v3.94h5.51c-.24 1.42-1.7 4.16-5.51 4.16-3.31 0-6.01-2.74-6.01-6.12s2.7-6.12 6.01-6.12c1.88 0 3.14.8 3.86 1.49l2.63-2.54C16.86 3.46 14.66 2.5 12 2.5 6.75 2.5 2.5 6.75 2.5 12s4.25 9.5 9.5 9.5c5.49 0 9.13-3.86 9.13-9.29 0-.62-.07-1.1-.16-1.51H12z"
-      />
-      <path
-        fill="#34A853"
-        d="M21.13 12.21c0-.62-.07-1.1-.16-1.51H12v3.94h5.51c-.24 1.42-1.7 4.16-5.51 4.16-2.18 0-4.04-1.15-5.02-2.81l-3.13 2.42C5.69 20.39 8.62 22 12 22c5.49 0 9.13-3.86 9.13-9.79z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M6.99 14c-.25-.74-.39-1.52-.39-2.32s.14-1.58.39-2.32V6.84H3.86C3.18 8.36 2.8 10.13 2.8 12s.38 3.64 1.06 5.16l3.13-2.42z"
-      />
-      <path
-        fill="#4285F4"
-        d="M12 6.7c1.88 0 3.14.8 3.86 1.49l2.63-2.54C16.86 3.46 14.66 2.5 12 2.5c-3.38 0-6.31 1.61-8.14 4.16L6.99 9.17C7.96 7.51 9.82 6.36 12 6.36V6.7z"
-      />
-    </svg>
-  );
-}
 
 function Spinner() {
   return (

@@ -140,44 +140,177 @@ function LoadingSkeleton() {
   );
 }
 
-function MissingAbstractCallout() {
+type ExportableAbstract = {
+  id: string;
+  title: string;
+  status: "ready" | "approved";
+  created_at: string;
+  approved_at: string | null;
+};
+
+async function fetchUserAbstracts(): Promise<{
+  authed: boolean;
+  ready: ExportableAbstract[];
+  approved: ExportableAbstract[];
+}> {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { authed: false, ready: [], approved: [] };
+
+  const { data: rows } = await supabase
+    .from("abstracts")
+    .select("id, status, pdf_url, created_at, approved_at")
+    .eq("user_id", user.id)
+    .in("status", ["ready", "approved"])
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  const list: ExportableAbstract[] = (
+    (rows as Array<{
+      id: string;
+      status: "ready" | "approved";
+      pdf_url: string | null;
+      created_at: string;
+      approved_at: string | null;
+    }> | null) ?? []
+  ).map((r) => {
+    const pdfName = (r.pdf_url ?? "").split("/").pop()?.replace(/\.pdf$/i, "");
+    const title =
+      pdfName?.replace(/[-_]+/g, " ").trim() || `Abstract ${r.id.slice(0, 8)}`;
+    return {
+      id: r.id,
+      title,
+      status: r.status,
+      created_at: r.created_at,
+      approved_at: r.approved_at,
+    };
+  });
+
+  return {
+    authed: true,
+    ready: list.filter((a) => a.status === "ready"),
+    approved: list.filter((a) => a.status === "approved"),
+  };
+}
+
+async function MissingAbstractCallout() {
+  const { authed, ready, approved } = await fetchUserAbstracts();
+
+  if (!authed || (approved.length === 0 && ready.length === 0)) {
+    return (
+      <section
+        className="ring-card relative overflow-hidden rounded-[var(--radius-card)] bg-[var(--vellum)] p-10 md:p-14"
+        aria-labelledby="missing-abstract-title"
+      >
+        <span aria-hidden="true" className="bg-brass-halo pointer-events-none absolute inset-0" />
+        <div className="relative grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
+          <div className="max-w-xl space-y-4">
+            <p className="eyebrow">No abstracts to export yet</p>
+            <h2
+              id="missing-abstract-title"
+              className="font-display text-3xl leading-[1.05] tracking-tight md:text-[40px]"
+            >
+              Upload your first lease.
+            </h2>
+            <p className="text-base text-[var(--whisper)] md:text-lg">
+              Drop a commercial lease PDF on your dashboard. Once it&apos;s
+              extracted and you&apos;ve approved the fields, it&apos;ll appear
+              here for export to Yardi, MRI, or AppFolio.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 md:items-end">
+            <Link
+              href="/dashboard"
+              className={`${buttonVariants({ variant: "default" })} h-11 rounded-full px-6`}
+            >
+              Go to dashboard
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
-      className="ring-card relative overflow-hidden rounded-[var(--radius-card)] bg-[var(--vellum)] p-10 md:p-14"
-      aria-labelledby="missing-abstract-title"
+      className="ring-card relative overflow-hidden rounded-[var(--radius-card)] bg-[var(--vellum)] p-8 md:p-10"
+      aria-labelledby="export-picker-title"
     >
-      <span aria-hidden="true" className="bg-brass-halo pointer-events-none absolute inset-0" />
-      <div className="relative grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
-        <div className="max-w-xl space-y-4">
-          <p className="eyebrow">No abstract selected</p>
-          <h2
-            id="missing-abstract-title"
-            className="font-display text-3xl leading-[1.05] tracking-tight md:text-[40px]"
-          >
-            Pick an abstract to export.
-          </h2>
-          <p className="text-base text-[var(--whisper)] md:text-lg">
-            The export workspace generates a CSV in your chosen system&apos;s
-            import format. Open an approved abstract first, then click
-            <span className="font-mono text-[var(--ink)]"> Export </span>
-            from its toolbar.
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 md:items-end">
-          <Link
-            href="/dashboard"
-            className={`${buttonVariants({ variant: "default" })} h-11 rounded-full px-6`}
-          >
-            Go to dashboard
-          </Link>
-          <Link
-            href="/review-queue"
-            className="text-sm font-medium text-[var(--ink)] underline-offset-4 hover:underline"
-          >
-            Review queued fields instead
-          </Link>
-        </div>
+      <div className="space-y-2">
+        <p className="eyebrow">Pick an abstract to export</p>
+        <h2
+          id="export-picker-title"
+          className="font-display text-2xl leading-tight md:text-3xl"
+        >
+          Your library
+        </h2>
+        <p className="text-sm text-[var(--whisper)] md:text-base">
+          Approved abstracts are ready to hand off. Abstracts still awaiting
+          approval need a quick review pass first.
+        </p>
       </div>
+
+      {approved.length > 0 && (
+        <div className="mt-8">
+          <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--whisper)]">
+            Approved · ready to export
+          </p>
+          <ul className="grid gap-3">
+            {approved.map((a) => (
+              <li key={a.id}>
+                <Link
+                  href={`/export?abstract_id=${encodeURIComponent(a.id)}`}
+                  className="ring-card flex items-center justify-between gap-4 rounded-[var(--radius-card)] bg-[var(--card)] px-5 py-4 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-medium)]"
+                >
+                  <div className="flex flex-col gap-1">
+                    <span className="font-display text-base font-medium text-[var(--ink)] md:text-lg">
+                      {a.title}
+                    </span>
+                    <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--whisper)]">
+                      Approved {new Date(a.approved_at ?? a.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <span className="font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--brass)]">
+                    Export →
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {ready.length > 0 && (
+        <div className="mt-8">
+          <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--whisper)]">
+            Awaiting approval
+          </p>
+          <ul className="grid gap-3">
+            {ready.map((a) => (
+              <li key={a.id}>
+                <Link
+                  href={`/abstract/${encodeURIComponent(a.id)}`}
+                  className="ring-card flex items-center justify-between gap-4 rounded-[var(--radius-card)] bg-[var(--vellum)] px-5 py-4 transition-all hover:-translate-y-0.5"
+                >
+                  <div className="flex flex-col gap-1">
+                    <span className="font-display text-base font-medium text-[var(--ink)] md:text-lg">
+                      {a.title}
+                    </span>
+                    <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--whisper)]">
+                      Extracted {new Date(a.created_at).toLocaleDateString()} · approve to unlock
+                    </span>
+                  </div>
+                  <span className="font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--whisper)]">
+                    Review →
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
   );
 }

@@ -142,6 +142,14 @@ export function AbstractDetailView({
     });
     setLastExport(format);
     setExportOpen(false);
+    // Trigger the real CSV download via /api/export. The browser's default
+    // download UX (filename = whatever Content-Disposition says) is fine —
+    // no need for an iframe trick.
+    if (typeof window !== "undefined") {
+      window.location.href = `/api/export?abstract_id=${encodeURIComponent(
+        abstract.id,
+      )}&format=${format}`;
+    }
   }
 
   function handleUpgrade() {

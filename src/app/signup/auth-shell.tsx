@@ -84,24 +84,6 @@ export function AuthShell({
             </ul>
           </div>
 
-          {/* Footer credentials strip — quiet legitimacy */}
-          <div className="hidden lg:block">
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--whisper)]/80">
-              Trusted by brokers at —
-            </p>
-            <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[var(--whisper)]/80">
-              {["CCIM Institute", "SIOR", "NAI Global", "Lee & Associates"].map(
-                (org) => (
-                  <span
-                    key={org}
-                    className="font-display text-[15px] italic"
-                  >
-                    {org}
-                  </span>
-                ),
-              )}
-            </div>
-          </div>
         </aside>
 
         {/* -------------------- Form panel (right) -------------------- */}
@@ -128,10 +110,6 @@ export function AuthShell({
               )}
             </div>
 
-            {/* Mobile-only credential whisper */}
-            <p className="mt-6 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--whisper)]/70 lg:hidden">
-              Trusted by CCIM · SIOR · NAI · Lee &amp; Associates
-            </p>
           </div>
         </section>
       </div>
